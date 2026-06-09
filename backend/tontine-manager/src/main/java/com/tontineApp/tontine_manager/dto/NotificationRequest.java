@@ -12,7 +12,7 @@ public class NotificationRequest {
     private String tempsRelatif;
     private String couleur;
     private Boolean estLu;
-    private Integer tontineId;
+    private Integer idTontine;
     private Integer idUser;
     private LocalDate dateCreation;
     private StatutNotification statutNotification;
