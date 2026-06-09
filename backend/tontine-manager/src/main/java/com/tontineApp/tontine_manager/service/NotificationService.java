@@ -30,8 +30,26 @@ public class NotificationService {
         notificationRepository.deleteById(id);
     }
 
-    public List<NotificationResponse> getNotifcationMembres(Integer idUser,Integer idTontine) {
+    public List<NotificationResponse> getNotificationMembres(Integer idUser,Integer idTontine) {
         Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
-        return notificationMapper.toNotificationResponse(notificationRepository.findAllById(membre.getId()));
+        return notificationRepository.findByMembre_Id(membre.getId()).stream()
+                .map(notificationMapper::toNotificationResponse)
+                .toList();
+    }
+
+    // récupérer les notifications non lues de l'utilisateur dans une tontine
+
+    public List<NotificationResponse> getNotificationNonLues(Integer idUser,Integer idTontine) {
+        Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
+        return notificationRepository.findByMembre_IdAndEstLu(membre.getId(),true).stream()
+                .map(notificationMapper::toNotificationResponse)
+                .toList();
+    }
+
+    // supprimer toutes les notifications d'un membres
+
+    public void supprimerNotificationMembre(Integer idUser,Integer idTontine){
+        Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
+        notificationRepository.deleteByMembre_Id(membre.getId());
     }
 }
