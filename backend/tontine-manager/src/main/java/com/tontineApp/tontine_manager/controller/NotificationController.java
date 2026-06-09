@@ -16,13 +16,13 @@ import java.util.List;
 public class NotificationController {
 
     private final NotificationService notificationService;
-    @GetMapping("user/{userId}/tontine/{tontineId}")
+    @GetMapping("/user/{userId}/tontine/{tontineId}")
     public ResponseEntity<List<NotificationResponse>> getNotifications(@PathVariable Integer userId, @PathVariable Integer tontineId){
         List<NotificationResponse> notifications = notificationService.getNotificationMembres(userId,tontineId);
         return ResponseEntity.ok(notifications);
     }
 
-    @GetMapping("user/{userId}/tontine/{tontineId}/non-lues")
+    @GetMapping("/user/{userId}/tontine/{tontineId}/non-lues")
     public ResponseEntity<List<NotificationResponse>> getNotificationsNonLues(@PathVariable Integer userId, @PathVariable Integer tontineId){
 
         List<NotificationResponse> notifications = notificationService.getNotificationNonLues(userId,tontineId);
@@ -38,5 +38,21 @@ public class NotificationController {
         NotificationResponse notification = notificationService.marquerLue(notificationId,true);
         return ResponseEntity.ok(notification);
     }
+
+
+    @PatchMapping("/{notificationId}/non-lire")
+    public ResponseEntity<NotificationResponse> marqueCommeNonLue(@PathVariable Integer notificationId) {
+        NotificationResponse notification = notificationService.marquerLue(notificationId, false);
+        return ResponseEntity.ok(notification);
+    }
+
+    @PatchMapping("/{notificationId}/tous-lire")
+    public ResponseEntity<List<NotificationResponse>> marqueToutesCommeLue(@PathVariable Integer notificationId) {
+        List<NotificationResponse> notifications = notificationService.marquerToutesCommeLue(notificationId);
+        return ResponseEntity.ok(notifications);
+    }
+
+
+
 
 }
