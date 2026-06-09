@@ -70,7 +70,7 @@ public class Notification {
             return heureRelative;
         }
 
-        LocalDateTime now = LocalDate.now();
+        LocalDate now = LocalDate.now();
         java.time.Duration duration = java.time.Duration.between(dateCreation, now);
 
         long heures = duration.toHours();
@@ -99,7 +99,7 @@ public class Notification {
 
     // Vérifier si la notification est récente (moins de 24h)
     public boolean estRecente() {
-        LocalDateTime now = LocalDate.now();
+        LocalDate now = LocalDate.now();
         java.time.Duration duration = java.time.Duration.between(dateCreation, now);
         return duration.toHours() < 24;
     }

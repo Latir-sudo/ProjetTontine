@@ -73,7 +73,6 @@ public class PaiementMapper {
                 }
             }
         }
-
         return response;
     }
 
