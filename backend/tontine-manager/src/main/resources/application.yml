@@ -2,7 +2,7 @@ spring:
   datasource:
     url: jdbc:postgresql://localhost:5432/tontine
     username: postgres
-    password: fatou
+    password: francois
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

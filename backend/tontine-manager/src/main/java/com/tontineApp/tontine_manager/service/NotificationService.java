@@ -30,6 +30,7 @@ public class NotificationService {
         final Membre membre = membreRepository.findByTontine_IdAndUser_Id(notificationRequest.getIdTontine(), notificationRequest.getIdUser())
                 .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur avec l'id " + notificationRequest.getIdUser() + " n'est pas membre de la tontine avec l'id " + notificationRequest.getIdTontine()));
 
+        System.out.println("test si cette méthode se trouve le problème");
 
             Notification notification = notificationMapper.toNotification(notificationRequest);
             notification.setMembre(membre);

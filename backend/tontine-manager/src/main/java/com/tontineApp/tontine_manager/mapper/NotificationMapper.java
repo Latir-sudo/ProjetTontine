@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class NotificationMapper {
 
-    public  Notification toNotification(NotificationRequest notificationRequest) {
+    public Notification toNotification(NotificationRequest notificationRequest) {
         Notification notification = new Notification();
         notification.setStatutNotification(notificationRequest.getStatutNotification());
         notification.setTypeNotification(notificationRequest.getTypeNotification());

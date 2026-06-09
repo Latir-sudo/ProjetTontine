@@ -39,20 +39,17 @@ public class NotificationController {
         return ResponseEntity.ok(notification);
     }
 
-
     @PatchMapping("/{notificationId}/non-lire")
     public ResponseEntity<NotificationResponse> marqueCommeNonLue(@PathVariable Integer notificationId) {
         NotificationResponse notification = notificationService.marquerLue(notificationId, false);
         return ResponseEntity.ok(notification);
     }
-
-    @PatchMapping("/{notificationId}/tous-lire")
-    public ResponseEntity<List<NotificationResponse>> marqueToutesCommeLue(@PathVariable Integer notificationId) {
-        List<NotificationResponse> notifications = notificationService.marquerToutesCommeLue(notificationId);
-        return ResponseEntity.ok(notifications);
+    @PatchMapping("/user/{userId}/tontine/{tontineId}/lire-tout")
+    public ResponseEntity<Void> marquerToutesNotificationsCommeLues(
+            @PathVariable Integer userId,
+            @PathVariable Integer tontineId) {
+        notificationService.marquerToutesNotificationsCommeLues(userId, tontineId);
+        return ResponseEntity.ok().build();
     }
-
-
-
 
 }
