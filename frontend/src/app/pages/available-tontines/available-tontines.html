@@ -1,0 +1,176 @@
+<div class="available-tontines-container">
+  <!-- En-tête -->
+  <div class="header">
+    <div class="header-content">
+      <h1>Tontines Disponibles</h1>
+      <p>Découvrez et rejoignez les tontines qui correspondent à vos objectifs d'épargne</p>
+    </div>
+  </div>
+
+  <!-- Section Recherche et Filtres -->
+  <div class="search-filter-section">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Rechercher une tontine..."
+        [(ngModel)]="searchText"
+        (ngModelChange)="onSearchChange()"
+        class="search-input"
+      />
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+    </div>
+
+    <button class="filter-button" (click)="toggleFilters()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
+      </svg>
+      Filtres
+    </button>
+
+    <select class="sort-select" [(ngModel)]="sortBy" (ngModelChange)="onSortChange()">
+      <option *ngFor="let option of sortOptions" [value]="option.value">
+        {{ option.label }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Filtres déroulants -->
+  <div class="filters-dropdown" *ngIf="showFilters">
+    <div class="filter-group">
+      <label>Type de Tontine</label>
+      <div class="filter-options">
+        <button
+          *ngFor="let filter of filters"
+          class="filter-chip"
+          [class.active]="selectedFilter === filter"
+          (click)="setFilter(filter)"
+        >
+          {{ filter }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Indicateur de chargement -->
+  <div *ngIf="isLoading" class="loading-spinner">
+    <div class="spinner"></div>
+    <p>Chargement des tontines...</p>
+  </div>
+
+ 
+
+  <!-- Grille des tontines -->
+  <div class="tontines-grid" *ngIf="!isLoading">
+    <div *ngIf="filteredTontines.length === 0" class="no-results">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="11" cy="11" r="8"></circle>
+        <path d="m21 21-4.35-4.35"></path>
+      </svg>
+      <p>Aucune tontine trouvée</p>
+    </div>
+
+    <div *ngFor="let tontine of filteredTontines" class="tontine-card" [class.expanded]="selectedTontineId === tontine.id">
+      <!-- Carte compacte -->
+      <div class="card-header" (click)="toggleTontineDetails(tontine.id)">
+        <div class="card-title-section">
+          <!-- ✅ nomTontine au lieu de title -->
+          <h3>{{ tontine.nomTontine }}</h3>
+          <!-- ✅ categorie au lieu de type -->
+          <p class="card-type" [class]="'type-' + (tontine.categorie || 'generale').toLowerCase()">
+            {{ tontine.categorie || 'Générale' }}
+          </p>
+        </div>
+        <div class="card-amount">
+          <!-- ✅ montant au lieu de amountDisplay -->
+          <span class="amount">{{ tontine.montant | number }} FCFA</span>
+        </div>
+      </div>
+
+      <!-- Informations principales -->
+      <div class="card-info">
+        <div class="info-row">
+          <span class="info-label">Lieu:</span>
+          <!-- ✅ region au lieu de location -->
+          <span class="info-value">{{ tontine.region || 'Non spécifié' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Membres:</span>
+          <!-- ✅ nombreMembres au lieu de members/maxMembers -->
+          <span class="info-value">{{ tontine.nombreMembres || 0 }} membres</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">Fréquence:</span>
+          <!-- ✅ frequence -->
+          <span class="info-value">{{ tontine.frequence || 'Mensuel' }}</span>
+        </div>
+      </div>
+
+      <!-- Barre de progression (optionnelle - sans maxMembers) -->
+      <div class="progress-section" *ngIf="false">
+        <div class="progress-bar">
+          <div class="progress-fill" [style.width.%]="0"></div>
+        </div>
+        <span class="progress-text">0% remplie</span>
+      </div>
+
+      <!-- Détails supplémentaires (expansible) -->
+      <div class="card-details" *ngIf="selectedTontineId === tontine.id">
+        <div class="details-content">
+          <!-- ✅ descriptionTontine -->
+          <p class="description">{{ tontine.descriptionTontine || 'Aucune description disponible.' }}</p>
+
+          <div class="details-grid">
+            <div class="detail-item">
+              <span class="detail-label">Statut</span>
+              <!-- ✅ statutTontine -->
+              <span class="detail-value">{{ tontine.statutTontine || 'Active' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Fréquence</span>
+              <span class="detail-value">{{ tontine.frequence || 'Mensuel' }}</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Montant</span>
+              <span class="detail-value">{{ tontine.montant | number }} FCFA</span>
+            </div>
+            <div class="detail-item">
+              <span class="detail-label">Région</span>
+              <span class="detail-value">{{ tontine.region || 'Sénégal' }}</span>
+            </div>
+          </div>
+
+          <div class="action-buttons">
+            <!-- ✅ canJoin basé sur isJoined -->
+            <button
+              *ngIf="!isJoined(tontine.id)"
+              class="btn-join"
+              (click)="postulerAdhesion(tontine.id)"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 1 4 1 4 14 21 14 21 4"></polyline>
+                <polyline points="4 21 4 17 21 17"></polyline>
+              </svg>
+              Adhérer
+            </button>
+            <button
+              *ngIf="isJoined(tontine.id)"
+              class="btn-joined"
+              disabled
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <polyline points="20 6 9 17 4 12"></polyline>
+              </svg>
+              Déjà adhérent
+            </button>
+            <button class="btn-info" (click)="viewDetails(tontine)">
+              Voir les détails
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

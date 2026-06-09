@@ -1,0 +1,84 @@
+<div class="page-shell add-member-shell">
+  <header class="add-header">
+    <button class="back-link" (click)="goBack()">← Retour</button>
+    <div>
+      <span class="brand-pill">Ajouter un membre</span>
+      <h1>Ajouter un nouveau membre</h1>
+      <p>Recherchez par nom ou numéro pour inviter un membre rapidement et facilement.</p>
+    </div>
+  </header>
+
+  <section class="search-area">
+    <div class="search-panel">
+      <div class="field full-width">
+        <label>Rechercher par téléphone</label>
+        <input [(ngModel)]="searchText"
+               (keyup.enter)="applyTelephoneFilter()"
+               placeholder="77 123 45 67" />
+      </div>
+      <div class="search-actions">
+        <button class="primary-button" (click)="applyTelephoneFilter()" [disabled]="isSearching">
+          {{ isSearching ? 'Recherche...' : 'Rechercher' }}
+        </button>
+        <button class="secondary-button" (click)="resetFilter()" *ngIf="searchText">
+          Réinitialiser
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="results">
+    <!-- Message de chargement -->
+    <div *ngIf="isLoading" class="loading">Chargement...</div>
+
+    <!-- Message de succès -->
+    <div *ngIf="successMessage" class="message success">{{ successMessage }}</div>
+
+    <!-- Message d'erreur -->
+    <div *ngIf="errorMessage" class="message error">{{ errorMessage }}</div>
+
+    <!-- Recherche en cours -->
+    <div *ngIf="isSearching" class="loading">Recherche en cours...</div>
+
+    <!-- ✅ Liste des résultats de recherche -->
+    <div *ngIf="!isSearching && !isLoading && filteredUtilisateurs.length > 0" class="results-container">
+      <h3>Résultats de la recherche ({{ filteredUtilisateurs.length }})</h3>
+      <ul class="result-list">
+        <li *ngFor="let user of filteredUtilisateurs" class="result-item">
+          <div class="user-info">
+            <div class="user-name">{{ user.prenom }} {{ user.nom }}</div>
+            <div class="user-phone">{{ user.telephone }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+          <span *ngIf="isAlreadyMember(user); else addSearchMemberButton" class="member-tag">Déjà membre</span>
+          <ng-template #addSearchMemberButton>
+            <button class="outline-button" (click)="addMember(user)">Ajouter</button>
+          </ng-template>
+        </li>
+      </ul>
+    </div>
+
+    <!-- ✅ Message si aucun résultat -->
+    <div *ngIf="!isSearching && !isLoading && searchText && filteredUtilisateurs.length === 0 && !errorMessage" class="empty">
+      Aucun résultat pour "{{ searchText }}"
+    </div>
+
+    <!-- ✅ Liste de tous les utilisateurs (quand pas de recherche) -->
+    <div *ngIf="!isSearching && !isLoading && !searchText && utilisateurs.length > 0" class="results-container">
+      <h3>Tous les utilisateurs ({{ utilisateurs.length }})</h3>
+      <ul class="result-list">
+        <li *ngFor="let user of utilisateurs" class="result-item">
+          <div class="user-info">
+            <div class="user-name">{{ user.prenom }} {{ user.nom }}</div>
+            <div class="user-phone">{{ user.telephone }}</div>
+            <div class="user-email">{{ user.email }}</div>
+          </div>
+          <span *ngIf="isAlreadyMember(user); else addMemberButton" class="member-tag">Déjà membre</span>
+          <ng-template #addMemberButton>
+            <button class="outline-button" (click)="addMember(user)">Ajouter</button>
+          </ng-template>
+        </li>
+      </ul>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"path": "../../welcome-to-docker"
+		},
+		{
+			"path": "../../Users/HP/Desktop/challenge"
+		}
+	],
+	"settings": {
+		"liveServer.settings.multiRootWorkspaceName": "challenge"
+	}
+}

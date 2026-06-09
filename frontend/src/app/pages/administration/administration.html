@@ -1,0 +1,77 @@
+<div class="page-shell admin-shell">
+  <header class="page-header">
+    <button class="back-link" (click)="goBack()">← Retour</button>
+    <div>
+      <span class="brand-pill">Administration</span>
+      <h1>Validation des adhésions</h1>
+      <p>Approvez les demandes d’adhésion et confirmez les paiements des membres en quelques clics.</p>
+    </div>
+  </header>
+
+  <section class="admin-grid">
+    <!-- Statistiques rapides -->
+    <div class="summary-card">
+      <div>
+        <h2>Statistiques rapides</h2>
+        <p>Vue claire de l’activité de votre tontine.</p>
+      </div>
+      <div class="stats">
+        <div><strong>{{ stats.membresActifs }}</strong><span>Membres actifs</span></div>
+        <div><strong>{{ stats.demandesEnAttente }}</strong><span>Demandes</span></div>
+        <div><strong>{{ stats.paiementsAValider }}</strong><span>Paiements à valider</span></div>
+        <div><strong>{{ stats.transactionsConfirmees }}</strong><span>Transactions confirmées</span></div>
+      </div>
+    </div>
+
+    <!-- Demandes d'adhésion -->
+    <div class="card card-large">
+      <div class="card-header">
+        <h2>Demandes d’adhésion</h2>
+        <p>Validez rapidement chaque nouvelle demande.</p>
+      </div>
+      <div class="list-group">
+        <div *ngIf="requests.length === 0" class="empty-state">
+          <p>Aucune demande d'adhésion en attente</p>
+        </div>
+        <article *ngFor="let request of requests; let i = index" class="list-item">
+          <div>
+            <strong>{{ request.prenomUser }} {{ request.nomUser }}</strong>
+            <span>{{ request.telephoneUser }}</span>
+            <small>Demande du {{ request.dateAdhesion | date:'dd/MM/yyyy' }}</small>
+          </div>
+          <div class="item-actions">
+            <button type="button" class="primary-button" (click)="acceptRequest(i)">Accepter</button>
+            <button type="button" class="secondary-button" (click)="rejectRequest(i)">Refuser</button>
+          </div>
+          <span class="pill pending">{{ getRequestLabel(request.statut) }}</span>
+        </article>
+      </div>
+    </div>
+
+    <!-- Confirmation de paiement -->
+    <div class="card card-large">
+      <div class="card-header">
+        <h2>Confirmation de paiement</h2>
+        <p>Confirmez que chaque membre a bien payé sa part.</p>
+      </div>
+      <div class="list-group">
+        <div *ngIf="payments.length === 0" class="empty-state">
+          <p>Aucun paiement en attente de validation</p>
+        </div>
+        <article *ngFor="let payment of payments; let i = index" class="list-item">
+          <div>
+            <strong>{{ payment.montant | number }} FCFA</strong>
+            <span>{{ getMethodLabel(payment.modePaiement) }}</span>
+            <small>Réf: {{ payment.reference }}</small>
+            <small>Date: {{ payment.datePaiement | date:'dd/MM/yyyy' }}</small>
+          </div>
+          <div class="item-actions">
+            <button type="button" class="primary-button" (click)="validerPaiement(i)">Valider</button>
+            <button type="button" class="secondary-button" (click)="rejeterPaiement(i)">Rejeter</button>
+          </div>
+          <span class="pill {{ getStatusClass(payment) }}">{{ getStatusLabel(payment) }}</span>
+        </article>
+      </div>
+    </div>
+  </section>
+</div>

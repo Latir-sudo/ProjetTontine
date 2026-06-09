@@ -1,0 +1,186 @@
+<div class="h-auto w-full px-4 py-6">
+  <header class="">
+    <div class="flex justify-between items-center">
+      <button class="bg-[#003366] text-white px-4 py-3 rounded-lg mb-8 cursor-pointer flex items-center gap-2" routerLink="/available-tontines">
+        ← Retour
+      </button>
+      
+      <!-- Boutons Admin (uniquement si l'utilisateur est admin) -->
+      <section *ngIf="isAdmin" class="flex gap-2 mb-8">
+        <button class="bg-[#FF7F50] text-white px-4 py-3 rounded-lg hover:bg-opacity-90 transition cursor-pointer flex items-center gap-2" (click)="gererMembres()">
+          <i class="fa-solid fa-user-plus"></i>
+          Ajouter membre
+        </button>
+        <button class="bg-[#003366] text-white px-4 py-3 rounded-lg hover:bg-opacity-90 transition cursor-pointer flex items-center gap-2 relative" (click)="gererDemandes()">
+          <i class="fa-solid fa-list-check"></i>
+          Gérer les demandes
+          <span *ngIf="demandes.length > 0" class="badge-demandes">{{ demandes.length }}</span>
+        </button>
+
+      </section>
+    </div>
+    
+    <div *ngIf="!isLoading && tontine">
+      <p class="text-xl font-extrabold mb-4 text-[#003366]">{{ tontine.nomTontine }}</p>
+    </div>
+    <div *ngIf="isLoading">
+      <div class="flex justify-center items-center py-8">
+        <i class="fa-solid fa-spinner fa-spin text-[#003366] text-3xl"></i>
+        <span class="ml-3 text-gray-500">Chargement...</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Message d'erreur -->
+  <div *ngIf="errorMessage" class="error-message bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
+    <i class="fa-solid fa-circle-exclamation mr-2"></i>
+    {{ errorMessage }}
+    <button routerLink="/available-tontines" class="text-red-700 underline ml-3">Retour à la liste</button>
+  </div>
+
+  <!-- Détails de la tontine -->
+  <section class="detail-card" *ngIf="!isLoading && tontine">
+    <div class="flex flex-wrap gap-6 w-auto h-auto px-4 py-8">
+      
+      <!-- Montant -->
+      <div class="montant flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
+        <i *ngIf="imageError" class="fa-solid fa-money-bill-wave text-[#FF7F50] text-3xl mb-2"></i>
+        <h3 class="text-[#003366] py-2 font-semibold">Montant</h3>
+        <h2 class="text-xl font-bold">{{ tontine.montant | number }} FCFA</h2>
+      </div>
+      
+      <!-- Fréquence -->
+      <div class="frequence flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
+        <i class="fa-solid fa-bolt text-[#FF7F50] text-3xl mb-2"></i>
+        <h3 class="text-[#003366] py-2 font-semibold">Fréquence</h3>
+        <h2 class="text-xl font-bold">{{ tontine.frequence || 'Mensuel' }}</h2>
+      </div>
+
+      <!-- Membres -->
+      <div class="membre flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
+        <i class="fa-solid fa-users text-[#FF7F50] text-3xl mb-2"></i>
+        <h3 class="text-[#003366] py-2 font-semibold">Membres</h3>
+        <h2 class="text-xl font-bold">{{ tontine.nombreMembres || 0 }}/{{ tontine.nombreMax || 20 }}</h2>
+        <!-- Barre de progression -->
+        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
+          <div class="bg-[#FF7F50] h-1.5 rounded-full" [style.width.%]="getProgressPercentage()"></div>
+        </div>
+      </div>
+      
+      <!-- Date début -->
+      <div class="debut flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
+        <i class="fa-solid fa-calendar text-[#FF7F50] text-3xl mb-2"></i>
+        <h3 class="text-[#003366] py-2 font-semibold">Début</h3>
+        <h2 class="text-xl font-bold">{{ (tontine.dateCreation | date:'dd/MM/yyyy') || '15 Mai' }}</h2>
+      </div>
+    </div>
+
+    <!-- Description -->
+    <div class="description w-full h-auto mt-8 py-4 px-4 flex flex-col shadow-lg rounded-lg bg-white">
+      <div class="mb-4 flex justify-between items-center">
+        <p class="text-lg font-semibold text-[#003366]">
+          <i class="fa-solid fa-file-lines mr-2"></i>
+          Description
+        </p>
+      </div>
+      <p class="italic text-[16px] text-gray-600">{{ tontine.descriptionTontine || 'Aucune description disponible.' }}</p>
+    </div>
+
+    <!-- Information administrateur et lieu -->
+    <div class="info-admin mt-6 py-4 px-4 shadow-lg rounded-lg bg-white">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-user-crown text-[#003366] text-xl"></i>
+          <div>
+            <p class="text-sm text-gray-500">Administrateur</p>
+            <p class="font-semibold">{{ tontine.prenomAdmin || 'Admin' }} {{ tontine.nomAdmin || '' }} {{ tontine.telephoneAdmin || '' }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-location-dot text-[#003366] text-xl"></i>
+          <div>
+            <p class="text-sm text-gray-500">Localisation</p>
+            <p class="font-semibold">{{ tontine.region || 'Sénégal' }}</p>
+          </div>
+        </div>
+        <div class="flex items-center gap-3">
+          <i class="fa-solid fa-chart-line text-[#003366] text-xl"></i>
+          <div>
+            <p class="text-sm text-gray-500">Statut</p>
+            <p class="font-semibold">
+              <span class="inline-flex items-center gap-1">
+                <span class="w-2 h-2 rounded-full" [class.bg-green-500]="tontine.statutTontine === 'ACTIVE'" [class.bg-yellow-500]="tontine.statutTontine !== 'ACTIVE'"></span>
+                {{ tontine.statutTontine || 'Active' }}
+              </span>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Squelette de chargement -->
+  <div *ngIf="isLoading && !tontine" class="skeleton-card space-y-4">
+    <div class="skeleton-header h-32 bg-gray-200 rounded-lg animate-pulse"></div>
+    <div class="skeleton-line h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+    <div class="skeleton-line short h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
+    <div class="skeleton-grid h-40 bg-gray-200 rounded-lg animate-pulse"></div>
+  </div>
+  
+  <!-- Bouton Paiement -->
+  <button 
+    *ngIf="isJoined"
+    (click)="goToPayment()" 
+    class="w-full bg-gradient-to-r from-[#FF7F50] to-[#FF6347] text-white py-3 rounded-xl font-bold hover:opacity-90 transition mt-6 flex items-center justify-center gap-2">
+    <i class="fa-solid fa-credit-card"></i>
+    Payer ma cotisation
+  </button>
+  
+  <!-- Bouton Rejoindre (si pas encore membre) -->
+  <button 
+    *ngIf="!isJoined && !isAdmin"
+    (click)="join()" 
+    class="w-full bg-[#003366] text-white py-3 rounded-xl font-bold hover:bg-opacity-90 transition mt-6 flex items-center justify-center gap-2">
+    <i class="fa-solid fa-handshake"></i>
+    Rejoindre cette tontine
+  </button>
+
+  <!-- Modal pour gérer les demandes d'adhésion -->
+<div *ngIf="showDemandesModal" class="modal-overlay" (click)="fermerModal()"></div>
+<div *ngIf="showDemandesModal" class="modal-container">
+  <div class="modal-header">
+    <h3>📋 Demandes d'adhésion en attente</h3>
+    <button class="modal-close" (click)="fermerModal()">✕</button>
+  </div>
+  
+  <div class="modal-body">
+    <!-- Aucune demande -->
+    <div *ngIf="demandes.length === 0" class="no-demandes">
+      <p>📭 Aucune demande d'adhésion en attente</p>
+    </div>
+    
+    <!-- Liste des demandes -->
+    <div *ngFor="let demande of demandes" class="demande-card">
+      <div class="demande-info">
+        <div class="demande-nom">
+          <strong>{{ demande.prenomUser }} {{ demande.nomUser }}</strong>
+        </div>
+        <div class="demande-details">
+          <div>📧 {{ demande.emailUser }}</div>
+          <div>📞 {{ demande.telephoneUser }}</div>
+          <div>📅 Demandé le: {{ demande.dateAdhesion | date:'dd/MM/yyyy' }}</div>
+        </div>
+      </div>
+      
+      <div class="demande-actions">
+        <button class="btn-approuver" (click)="approuverDemande(demande)">
+          ✅ Approuver
+        </button>
+        <button class="btn-rejeter" (click)="rejeterDemande(demande)">
+          ❌ Rejeter
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>

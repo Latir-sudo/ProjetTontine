@@ -1,0 +1,41 @@
+<div class="page-shell validate-shell">
+  <header class="page-header">
+    <button class="back-link" routerLink="/payment">← Retour</button>
+    <div>
+      <span class="brand-pill">Valider un paiement</span>
+      <h1>Valider un paiement</h1>
+      <p>Confirmez les informations de paiement avant de finaliser.</p>
+    </div>
+  </header>
+
+  <section class="validate-card">
+    <div class="member-block">
+      <div class="avatar">F</div>
+      <div>
+        <strong>Fatou Seck</strong>
+        <span>Tontine Famille • Mai 2026</span>
+      </div>
+    </div>
+
+    <form class="validate-form" (ngSubmit)="submit()">
+      <label>
+        <span>Montant payé (FCFA)</span>
+        <input type="number" [(ngModel)]="payment.amount" name="amount" required />
+      </label>
+      <label>
+        <span>Date de paiement</span>
+        <input type="date" [(ngModel)]="payment.date" name="date" required />
+      </label>
+      <label>
+        <span>Heure de paiement</span>
+        <input type="time" [(ngModel)]="payment.time" name="time" required />
+      </label>
+      <label>
+        <span>Référence de paiement</span>
+        <input type="text" placeholder="# Ex TXN001234" [(ngModel)]="payment.reference" name="reference" required />
+      </label>
+
+      <button class="primary-button" type="submit">Valider le paiement</button>
+    </form>
+  </section>
+</div>

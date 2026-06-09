@@ -1,0 +1,74 @@
+<div class="page-shell history-shell mt-10">
+  <header class="page-header">
+    <button class="back-link" routerLink="/">← Retour</button>
+    <div>
+      <span class="brand-pill">Historique cotisation</span>
+      <h1>Historique des cotisations</h1>
+      <p>Retrouvez ici l'historique de tous vos paiements.</p>
+    </div>
+  </header>
+
+  <!-- Chargement -->
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement de votre historique...</p>
+  </div>
+
+  <!-- Erreur -->
+  <div *ngIf="errorMessage" class="error-state">
+    <span class="error-icon"></span>
+    <p>{{ errorMessage }}</p>
+    <button (click)="loadHistorique()" class="retry-btn">Réessayer</button>
+  </div>
+
+  <!-- Filtres simples -->
+  <div *ngIf="!isLoading && !errorMessage && payments.length > 0" class="history-tabs">
+    <button [class.active]="filter === 'all'" (click)="setFilter('all')">Tous</button>
+    <button [class.active]="filter === 'success'" (click)="setFilter('success')">Réussis</button>
+    <button [class.active]="filter === 'pending'" (click)="setFilter('pending')">En attente</button>
+  </div>
+
+  <!-- Liste des paiements -->
+  <div *ngIf="!isLoading && !errorMessage" class="history-list">
+    <!-- Message liste vide -->
+    <div *ngIf="filteredPayments.length === 0" class="empty-state">
+      <span class="empty-icon">📭</span>
+      <p>Aucune cotisation à afficher</p>
+    </div>
+
+    <!-- Cartes des paiements -->
+    <div *ngFor="let payment of filteredPayments" class="history-card" 
+         [class.pending]="payment.valide === false" 
+         [class.failed]="payment.valide === null">
+      
+      <!-- Ligne 1 : Titre et statut -->
+      <div class="card-header">
+        <div class="card-icon">
+          <span *ngIf="payment.valide === true">✅</span>
+          <span *ngIf="payment.valide === null">❌</span>
+          <span *ngIf="payment.valide === false"></span>
+        </div>
+        <div class="card-title">
+          <strong>{{ payment.titreCotisation }}</strong>
+          <span class="card-method">{{ getMethodLabel(payment.modePaiement) }}</span>
+        </div>
+        <div class="card-status">
+          <span class="status-badge" [class]="getStatusClass(payment)">
+            {{ getStatusLabel(payment) }}
+          </span>
+        </div>
+      </div>
+      
+      <!-- Ligne 2 : Montant -->
+      <div class="card-amount">
+        <strong>{{ payment.montant | number }} FCFA</strong>
+      </div>
+      
+      <!-- Ligne 3 : Date et référence -->
+      <div class="card-footer">
+        <span>📅 {{ payment.datePaiement | date:'dd/MM/yyyy à HH:mm' }}</span>
+        <small>🔖 {{ payment.reference }}</small>
+      </div>
+    </div>
+  </div>
+</div>

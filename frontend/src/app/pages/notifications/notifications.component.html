@@ -1,0 +1,60 @@
+<!-- src/app/notifications/notifications.component.html -->
+<div class="page-shell notification-shell">
+  <header class="page-header">
+    <button class="back-link" routerLink="/">← Retour</button>
+    <div>
+      <span class="brand-pill">Notifications</span>
+      <h1>Notifications</h1>
+      <p>Suivez les événements importants de vos tontines.</p>
+    </div>
+    <button class="action-link" type="button" (click)="markAllRead()">Tout marquer comme lu</button>
+  </header>
+
+  <!-- État de chargement -->
+  <div *ngIf="loading" class="loading-state">
+    <div class="spinner"></div>
+    <p>Chargement des notifications...</p>
+  </div>
+
+  <!-- État d'erreur -->
+  <div *ngIf="error" class="error-state">
+    <p>{{ error }}</p>
+    <button (click)="loadNotifications()" class="retry-btn">Réessayer</button>
+  </div>
+
+  <!-- Liste des notifications -->
+  <div *ngIf="!loading && !error" class="notification-list">
+    <article
+      *ngFor="let notification of notifications; trackBy: trackByNotificationId"
+      class="notification-card"
+      [class.read]="notification.estLu"
+      (click)="markSingleRead(notification.id)">
+      <div class="notification-dot" [style.background]="notification.couleur"></div>
+      <div>
+        <strong>{{ notification.titre }}</strong>
+        <p>{{ notification.message }}</p>
+      </div>
+      <div class="notification-right">
+        <span>{{ notification.tempsRelatif }}</span>
+        <button
+          *ngIf="!notification.estLu"
+          class="mark-read-btn"
+          (click)="$event.stopPropagation(); markSingleRead(notification.id)"
+          title="Marquer comme lu">
+          ✓
+        </button>
+        <button
+          class="delete-btn"
+          (click)="$event.stopPropagation(); deleteNotification(notification.id)"
+          title="Supprimer">
+          ×
+        </button>
+      </div>
+    </article>
+
+    <!-- État vide -->
+    <div *ngIf="notifications.length === 0" class="empty-state">
+      <p>Aucune notification pour le moment</p>
+    </div>
+  </div>
+</div>

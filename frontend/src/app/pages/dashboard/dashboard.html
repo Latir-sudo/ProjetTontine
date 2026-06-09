@@ -1,0 +1,102 @@
+<div class="page-shell">
+  <!-- Hero section -->
+  <section class="hero-card">
+    <div class="hero-copy">
+      <p class="hero-pretitle">Bonjour, {{ currentUser?.prenom || currentUser?.nom }}</p>
+      <h2 class="text-xl">Gérez vos tontines facilement</h2>
+    </div>
+    <div class="hero-statuses">
+      <article class="status-card">
+        <span class="status-label">Total cotisé</span>
+        <strong>{{ totalCotise | number }} F</strong>
+      </article>
+      <article class="status-card">
+        <span class="status-label">Mes tontines</span>
+        <strong>{{ mesTontines.length }}</strong>
+      </article>
+    </div>
+  </section>
+  
+  <!-- Mes tontines -->
+  <section class="section-card">
+    <div class="section-header">
+      <p class="section-label">Mes tontines</p>
+      <div>
+        
+        <button class="outline-button" routerLink="/tontine-availables">+ Rejoindre</button>
+      </div>
+    </div>
+
+    <!-- Affichage pendant le chargement -->
+    <div *ngIf="isLoading" class="loading-spinner">
+      Chargement de vos tontines...
+    </div>
+
+    <!-- Affichage une fois chargé -->
+    <div *ngIf="!isLoading">
+      <!-- DEBUG: Afficher les données brutes -->
+      <div style="background: #f0f0f0; padding: 10px; margin: 10px; font-size: 12px; display: none;">
+        Nombre de tontines: {{ mesTontines.length }}<br>
+        Données: {{ mesTontines | json }}
+      </div>
+      
+      <div class="tontine-list" *ngIf="mesTontines.length > 0; else noTontines">
+        <article class="tontine-item" *ngFor="let tontine of mesTontines">
+          <div class="tontine-item-main">
+            <div>
+              <h2>{{ tontine.nomTontine || 'Sans nom' }}</h2>
+              <p>{{ tontine.nombreMembres || 0}} /{{tontine.nombreMax}} membres</p>
+            </div>
+            <span class="tontine-amount">{{ tontine.montant | number }} FCFA</span>
+          </div>
+          <p class="tontine-meta">
+            Fréquence: {{ tontine.frequence || 'Non spécifiée' }} | 
+            Catégorie: {{ tontine.categorie || 'Générale' }}
+          </p>
+          <p class="tontine-meta" *ngIf="tontine.descriptionTontine">
+            {{ tontine.descriptionTontine }}
+          </p>
+        </article>
+      </div>
+      <ng-template #noTontines>
+        <div class="empty-state">
+          <p>Vous n'avez pas encore de tontine.</p>
+          <button routerLink="/available-tontines" class="primary-button">Rejoindre une tontine</button>
+        </div>
+      </ng-template>
+    </div>
+  </section>
+
+  <!-- Tontines disponibles -->
+  <section class="section-card explore-section">
+    <div class="explore-header">
+      <div>
+        <h2 class="explore-title">Découvrez les tontines disponibles</h2>
+        <p class="explore-description">Explorez et rejoignez d'autres tontines pour diversifier vos investissements</p>
+      </div>
+      <a routerLink="/tontine-availables" class="explore-button">Voir toutes les tontines →</a>
+    </div>
+    
+    <div *ngIf="isLoading" class="loading-spinner">
+      Chargement des tontines disponibles...
+    </div>
+    
+    <div *ngIf="!isLoading">
+      <div class="explore-preview" *ngIf="tontinesDisponibles.length > 0; else noAvailable">
+        <div class="preview-card" *ngFor="let tontine of tontinesDisponibles.slice(0, 3)">
+          <div class="preview-badge">{{ tontine.categorie || 'Populaire' }}</div>
+          <h3>{{ tontine.nomTontine }}</h3>
+          <p class="preview-meta">{{ tontine.nombreMembres || 0 }} membres   {{ tontine.montant | number }} FCFA/{{ tontine.frequence || 'mois' }}</p>
+          <p class="preview-description">{{ tontine.descriptionTontine || 'Rejoignez cette tontine' }}</p>
+          <button [routerLink]="['/tontine',tontine.id]" class="preview-join-btn">Découvrir</button>
+        </div>
+      </div>
+      <ng-template #noAvailable>
+        <div class="empty-state">
+          <p>Aucune tontine disponible pour le moment.</p>
+          <button routerLink="/tontine/create" class="primary-button">Créer une tontine</button>
+        </div>
+      </ng-template>
+    </div>
+  </section>
+</div>

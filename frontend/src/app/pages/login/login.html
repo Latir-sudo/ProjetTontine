@@ -1,0 +1,55 @@
+<div class="page-shell login-shell">
+  <section class="auth-card">
+    <div class="auth-header">
+      <span class="brand-pill">Connexion</span>
+      <h1>Tontine-Manager</h1>
+      <p>Connectez-vous pour continuer</p>
+    </div>
+
+    <form class="auth-form" (ngSubmit)="login()">
+      <label>
+        <span>Email</span>
+        <input
+          type="email"
+          placeholder="example@email.com" 
+          [(ngModel)]="credentials.email"
+          name="email"
+          required
+        />
+      </label>
+
+      <label>
+        <span>Mot de passe</span>
+        <input
+          type="password"
+          placeholder="********"
+          [(ngModel)]="credentials.password"
+          name="password"
+          required
+        />
+      </label>
+
+      <!-- Message d'erreur -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+
+      <!-- Indicateur de chargement -->
+      <div *ngIf="isLoading" class="loading-spinner">
+        Connexion en cours...
+      </div>
+
+      <div class="auth-action-row">
+        <a routerLink="/forgot-password">Mot de passe oublié ?</a>
+      </div>
+
+      <button class="primary-button" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Connexion...' : 'Se connecter' }}
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Pas de compte ? <a routerLink="/inscription">S’inscrire</a>
+    </p>
+  </section>
+</div>

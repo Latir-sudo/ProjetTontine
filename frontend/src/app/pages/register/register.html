@@ -1,0 +1,107 @@
+<div class="page-shell auth-shell">
+  <section class="signup-card">
+    <div class="card-header">
+      <span class="brand-pill">Créer un compte</span>
+      <h1>Rejoignez notre communauté</h1>
+      <p>Créez un compte pour gérer facilement vos tontines.</p>
+    </div>
+
+    <form class="auth-form" (ngSubmit)="register()">
+      <div class="form-row">
+        <label>
+          <span>Nom</span>
+          <input 
+            type="text" 
+            placeholder="Votre nom" 
+            [(ngModel)]="userData.nom" 
+            name="nom" 
+            required 
+          />
+        </label>
+
+        <label>
+          <span>Prénom</span>
+          <input 
+            type="text" 
+            placeholder="Votre prénom" 
+            [(ngModel)]="userData.prenom" 
+            name="prenom" 
+            required 
+          />
+        </label>
+      </div>
+
+      <label>
+        <span>Localité</span>
+        <select [(ngModel)]="userData.ville" name="ville" required>
+          <option value="" disabled>Sélectionnez votre localité</option>
+          <option *ngFor="let loc of localites" [value]="loc">{{ loc }}</option>
+        </select>
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input 
+          type="email" 
+          placeholder="exemple@email.com" 
+          [(ngModel)]="userData.email" 
+          name="email" 
+          required 
+        />
+      </label>
+
+      <label>
+        <span>Téléphone</span>
+        <input 
+          type="tel" 
+          placeholder="77 123 45 67" 
+          [(ngModel)]="userData.telephone" 
+          name="telephone" 
+          required 
+        />
+      </label>
+
+
+
+      <label>
+        <span>Mot de passe</span>
+        <input 
+          type="password" 
+          placeholder="Minimum 8 caractères" 
+          [(ngModel)]="userData.password" 
+          name="password" 
+          required 
+          minlength="8"
+        />
+      </label>
+
+      <label>
+        <span>Confirmer le mot de passe</span>
+        <input 
+          type="password" 
+          placeholder="Minimum 8 caractères" 
+          [(ngModel)]="confirmPassword" 
+          name="confirmPassword" 
+          required 
+          minlength="8"
+        />
+      </label>
+
+      <!-- Messages d'erreur / succès -->
+      <div *ngIf="errorMessage" class="error-message">
+        {{ errorMessage }}
+      </div>
+      <div *ngIf="successMessage" class="success-message">
+        {{ successMessage }}
+      </div>
+
+      <button class="primary-button" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Inscription en cours...' : "S'inscrire" }}
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Déjà un compte ? <a routerLink="/login">Se connecter</a>
+    </p>
+  </section>
+</div>

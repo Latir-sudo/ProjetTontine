@@ -1,0 +1,65 @@
+<div class="min-h-screen bg-gray-50 p-4">
+  <div class="max-w-md mx-auto">
+    <button routerLink="/dashboard" class="text-[#003366] mb-4 flex items-center gap-1">
+      ← Retour
+    </button>
+    
+    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+      <!-- Entête -->
+      <div class="bg-[#003366] text-white p-6 text-center">
+        <p class="text-sm opacity-90">Montant à payer</p>
+        <p class="text-4xl font-bold">{{ tontine?.montant }} FCFA</p>
+        <p class="text-sm mt-1">{{ tontine?.nomTontine }} · Mai 2026</p>
+      </div>
+
+      <!-- Corps -->
+      <div class="p-6 space-y-6">
+        <div>
+          <p class="text-gray-600 mb-3">Choisir un mode de paiement sécurisé</p>
+          <div class="space-y-2">
+            <label class="border rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-orange-50 transition">
+              <input type="radio" name="payment" class="text-[#FF7F50]">
+              <div class="flex-1">
+                <p class="font-medium">Orange Money</p>
+                <p class="text-xs text-gray-500">Paiement mobile</p>
+              </div>
+              <span class="text-2xl">📱</span>
+            </label>
+            <label class="border rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-orange-50 transition">
+              <input type="radio" name="payment" class="text-[#FF7F50]">
+              <div class="flex-1">
+                <p class="font-medium">Wave</p>
+                <p class="text-xs text-gray-500">Paiement mobile</p>
+              </div>
+              <span class="text-2xl">🌊</span>
+            </label>
+            <label class="border rounded-xl p-3 flex items-center gap-3 cursor-pointer hover:bg-orange-50 transition">
+              <input type="radio" name="payment" class="text-[#FF7F50]">
+              <div class="flex-1">
+                <p class="font-medium">Free Money</p>
+                <p class="text-xs text-gray-500">Paiement mobile</p>
+              </div>
+              <span class="text-2xl">💳</span>
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Numéro de téléphone</label>
+          <input type="tel" value="7754365435" class="w-full p-3 border border-gray-300 rounded-lg">
+          <p class="text-xs text-gray-400 mt-2">Vous recevrez une notification pour confirmer le paiement</p>
+        </div>
+
+        <button class="w-full bg-[#FF7F50] text-white py-3 rounded-xl font-bold hover:bg-opacity-90 transition">
+          Payer
+        </button>
+
+        <!-- Infos tontine -->
+        <div class="border-t pt-4 text-sm text-gray-500 space-y-1">
+          <p>📍 Localisation : {{ tontine?.region }}</p>
+          <p>👑 Administrateur : {{ tontine?.nomAdmin }} {{ tontine?.prenomAdmin }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

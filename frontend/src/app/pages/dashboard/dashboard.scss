@@ -1,0 +1,339 @@
+:host {
+  display: block;
+  min-height: 100vh;
+  background: #ffffff;
+  color: #1a1a1a;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif;
+  padding: 1.25rem;
+  box-sizing: border-box;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.page-shell {
+  width: min(100%, 1100px);
+  margin: 0 auto;
+  display: grid;
+  gap: 1.25rem;
+}
+
+
+.hero-card {
+  padding: 1.5rem;
+  border-radius: 2rem;
+  background: linear-gradient(135deg, #0052cc 0%, #003d82 100%);
+  border: none;
+  display: grid;
+  gap: 1.5rem;
+  color: #ffffff;
+}
+
+.hero-pretitle {
+  margin: 0 0 0.5rem 0;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+}
+
+.hero-card h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 3.35rem);
+  line-height: 1.05;
+  color: #ffffff;
+}
+
+.hero-statuses {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.status-card {
+  padding: 1.25rem;
+  border-radius: 1.5rem;
+  background: #ffffff;
+  border: 2px solid #0052cc;
+  box-shadow: 0 4px 12px rgba(0, 82, 204, 0.1);
+}
+
+
+.status-label {
+  display: block;
+  margin-bottom: 0.65rem;
+  color: rgba(26, 26, 26, 0.72);
+  font-size: 0.95rem;
+}
+
+.status-card strong {
+  font-size: 1.5rem;
+  color: #1a1a1a;
+}
+
+.section-card {
+  padding: 1.25rem;
+  border-radius: 1.75rem;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  display: grid;
+  gap: 1.25rem;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.section-label {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.outline-button {
+  border: 2px solid #ff8f4c;
+  background: #ff8f4c;
+  color: #ffffff;
+  padding: 0.85rem 1.15rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(255, 141, 76, 0.2);
+}
+
+.outline-button:hover {
+  background: #ff7d3d;
+  border-color: #ff7d3d;
+  box-shadow: 0 6px 16px rgba(255, 141, 76, 0.3);
+}
+
+.tontine-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.tontine-item {
+  padding: 1rem 1rem 0.95rem 1rem;
+  border-radius: 1.5rem;
+  background: #f8f8f8;
+  border: 1px solid #e0e0e0;
+  display: grid;
+  gap: 0.9rem;
+}
+
+.tontine-item-main {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.tontine-item h2 {
+  margin: 0 0 0.35rem 0;
+  font-size: 1.05rem;
+  color: #1a1a1a;
+}
+
+.tontine-item p {
+  margin: 0;
+  color: rgba(26, 26, 26, 0.72);
+  font-size: 0.95rem;
+}
+
+.tontine-amount {
+  font-weight: 700;
+  color: #ff8f4c;
+  font-size: 1rem;
+  white-space: nowrap;
+}
+
+.tontine-meta {
+  margin: 0;
+  color: rgba(26, 26, 26, 0.6);
+  font-size: 0.92rem;
+}
+
+.quick-actions .actions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.action-button {
+  border: 2px solid #0052cc;
+  background: #0052cc;
+  color: #ffffff;
+  padding: 1rem;
+  border-radius: 1.4rem;
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 4.2rem;
+  transition: transform 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 82, 204, 0.15);
+}
+
+.action-button:hover {
+  transform: translateY(-2px);
+  background: #003d82;
+  border-color: #003d82;
+  box-shadow: 0 8px 20px rgba(0, 82, 204, 0.25);
+}
+
+@media (max-width: 720px) {
+  :host {
+    padding: 1rem;
+  }
+
+  .page-shell {
+    gap: 1rem;
+  }
+
+  .topbar {
+    align-items: flex-start;
+  }
+
+  .hero-card,
+  .section-card {
+    padding: 1.15rem;
+  }
+
+  .hero-statuses,
+  .actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .explore-preview {
+    grid-template-columns: 1fr;
+  }
+}
+
+.explore-section {
+  background: linear-gradient(135deg, #f0f7ff 0%, #fff5f0 100%);
+  border: 2px solid #dfe4f0;
+}
+
+.explore-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+}
+
+.explore-title {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a1a1a;
+}
+
+.explore-description {
+  margin: 0;
+  color: rgba(26, 26, 26, 0.72);
+  font-size: 0.95rem;
+}
+
+.explore-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.95rem 1.5rem;
+  background: linear-gradient(135deg, #ff8f4c, #ff7d3d);
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 1.25rem;
+  font-weight: 700;
+  box-shadow: 0 8px 16px rgba(255, 141, 76, 0.2);
+  transition: all 0.3s ease;
+}
+
+.explore-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 24px rgba(255, 141, 76, 0.3);
+}
+
+.explore-preview {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.preview-card {
+  position: relative;
+  padding: 1.5rem;
+  background: #ffffff;
+  border: 1px solid #e0e0e0;
+  border-radius: 1.5rem;
+  transition: all 0.3s ease;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.preview-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 82, 204, 0.12);
+  border-color: #0052cc;
+}
+
+.preview-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  background: #ff8f4c;
+  color: #ffffff;
+  border-radius: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.preview-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #1a1a1a;
+  font-weight: 700;
+}
+
+.preview-meta {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #0052cc;
+  font-weight: 600;
+}
+
+.preview-description {
+  margin: 0;
+  font-size: 0.95rem;
+  color: rgba(26, 26, 26, 0.72);
+  line-height: 1.4;
+}
+
+.preview-join-btn {
+  border: none;
+  background: #0052cc;
+  color: #ffffff;
+  padding: 0.85rem 1rem;
+  border-radius: 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 82, 204, 0.15);
+}
+
+.preview-join-btn:hover {
+  background: #003d82;
+  box-shadow: 0 6px 16px rgba(0, 82, 204, 0.25);
+  transform: translateY(-1px);
+}

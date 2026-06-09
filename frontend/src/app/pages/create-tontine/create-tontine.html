@@ -1,0 +1,112 @@
+<div class="page-shell create-shell">
+  <section class="create-card">
+    <div class="create-header">
+      <a routerLink="/dashboard" class="back-link">← Retour</a>
+      <h1>Créer une tontine</h1>
+      <p>Remplissez les informations pour créer votre tontine</p>
+    </div>
+
+    <!-- Messages -->
+    <div *ngIf="successMessage" class="success-message">
+      ✅ {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="error-message">
+       {{ errorMessage }}
+    </div>
+
+    <form class="create-form" (ngSubmit)="create()">
+      <!-- Nom de la tontine -->
+      <label>
+        <span>Nom de la tontine *</span>
+        <input
+          type="text"
+          placeholder="Ex. Épargne solidaire"
+          [(ngModel)]="form.nomTontine"
+          name="nomTontine"
+          required
+        />
+      </label>
+
+      <!-- Catégorie -->
+      <label>
+        <span>Catégorie *</span>
+        <select [(ngModel)]="form.categorie" name="categorie" required>
+          <option value="" disabled>Sélectionnez une catégorie</option>
+          <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+        </select>
+      </label>
+
+      <!-- Localité -->
+      <label>
+        <span>Localité *</span>
+        <select [(ngModel)]="form.region" name="region" required>
+          <option *ngFor="let localite of localites" [value]="localite">{{ localite }}</option>
+        </select>
+      </label>
+
+      <!-- Montant et Fréquence -->
+      <div class="grid-two">
+        <label>
+          <span>Montant *</span>
+          <div class="field-addon">
+            <input
+              type="number"
+              [(ngModel)]="form.montant"
+              name="montant"
+              min="1000"
+              step="500"
+              required
+            />
+            <span>FCFA</span>
+          </div>
+        </label>
+
+        <label>
+          <span>Fréquence *</span>
+          <select [(ngModel)]="form.frequence" name="frequence" required>
+            <option *ngFor="let frequency of frequencies" [value]="frequency">{{ frequency }}</option>
+          </select>
+        </label>
+      </div>
+
+      <!-- Nombre max de membres -->
+      <label>
+        <span>Nombre maximum de membres *</span>
+        <input
+          type="number"
+          [(ngModel)]="form.nombreMax"
+          name="nombreMax"
+          min="2"
+          max="50"
+          required
+        />
+      </label>
+
+      <!-- Description (optionnelle) -->
+      <label>
+        <span>Description</span>
+        <textarea
+          [(ngModel)]="form.descriptionTontine"
+          name="descriptionTontine"
+          rows="3"
+          placeholder="Décrivez brièvement votre tontine..."
+        ></textarea>
+      </label>
+
+      <!-- Politique (optionnelle) -->
+      <label>
+        <span>Politique de la tontine</span>
+        <textarea
+          [(ngModel)]="form.politiqueTontine"
+          name="politiqueTontine"
+          rows="2"
+          placeholder="Règles et conditions..."
+        ></textarea>
+      </label>
+
+      <button class="primary-button" type="submit" [disabled]="isLoading">
+        {{ isLoading ? 'Création en cours...' : 'Créer la tontine' }}
+      </button>
+    </form>
+  </section>
+</div>

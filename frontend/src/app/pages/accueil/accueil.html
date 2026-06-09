@@ -1,0 +1,155 @@
+<div class="browse-container">
+  <!-- Hero Section -->
+  <section class="hero-public">
+    <div class="hero-content">
+      <h1>Découvrez les meilleures tontines</h1>
+      <p>Rejoignez une communauté d'épargne collective et atteignez vos objectifs financiers</p>
+      <div class="hero-cta">
+        <a routerLink="/inscription" class="cta-primary">Créer un compte</a>
+        <a routerLink="/login" class="cta-secondary">Se connecter</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Info Section -->
+  <section class="info-section">
+    <div class="info-grid">
+      <div class="info-card">
+        <div class="info-icon">📊</div>
+        <h3>Épargne Collective</h3>
+        <p>Mettez vos ressources en commun pour atteindre ensemble vos objectifs d'épargne</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🤝</div>
+        <h3>Solidarité</h3>
+        <p>Bénéficiez du soutien mutuel d'une communauté engagée et solidaire</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🎯</div>
+        <h3>Objectifs Clairs</h3>
+        <p>Choisissez une tontine alignée avec vos objectifs financiers personnels</p>
+      </div>
+      <div class="info-card">
+        <div class="info-icon">🔒</div>
+        <h3>Sécurité</h3>
+        <p>Transactions sécurisées et suivi transparent de votre épargne</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Search and Filter Section -->
+  <section class="search-section">
+    <div class="search-wrapper">
+      <div class="search-box">
+        <input
+          type="text"
+          placeholder="Rechercher une tontine..."
+          [(ngModel)]="searchText"
+          (ngModelChange)="onSearchChange()"
+          class="search-input"
+        />
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </div>
+
+      <select class="filter-select" [(ngModel)]="selectedType" (ngModelChange)="onTypeChange()">
+        <option value="">Tous les types</option>
+        <option *ngFor="let type of getTypes()" [value]="type">{{ type }}</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Tontines Grid -->
+  <section class="tontines-section">
+    <h2 class="section-title">Tontines Disponibles ({{ filteredTontines().length }})</h2>
+
+    <!-- Chargement -->
+    <div *ngIf="isLoading()" class="loading-spinner">
+      <div class="spinner"></div>
+      <p>Chargement des tontines...</p>
+    </div>
+
+    <!-- Aucun résultat -->
+    <div *ngIf="!isLoading() && filteredTontines().length === 0" class="no-results">
+      <p>Aucune tontine ne correspond à votre recherche</p>
+    </div>
+
+    <!-- Grille des tontines -->
+    <div class="tontines-grid" *ngIf="!isLoading() && filteredTontines().length > 0">
+      <div
+        *ngFor="let tontine of filteredTontines()"
+        class="tontine-card"
+        [class.expanded]="selectedTontineId() === tontine.id"
+      >
+        <!-- Card Header (Always visible) -->
+        <div class="card-header" (click)="toggleTontineDetails(tontine.id)">
+          <div class="card-title">
+            <h3>{{ tontine.nomTontine }}</h3>
+            <span class="card-type">{{ tontine.categorie || 'Générale' }}</span>
+          </div>
+          <div class="card-amount">{{ tontine.montant | number:'1.0-0' }} FCFA</div>
+        </div>
+
+        <!-- Quick Info -->
+        <div class="quick-info">
+          <span class="info-item">📍 {{ tontine.region || 'Sénégal' }}</span>
+          <span class="info-item">👥 {{ tontine.nombreMembres || 0 }}/{{ tontine.maxMembres || 20 }} membres</span>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-wrapper">
+          <div class="progress-bar">
+            <div class="progress-fill" [style.width.%]="getProgressPercentage(tontine)"></div>
+          </div>
+          <span class="progress-text">{{ getProgressPercentage(tontine) | number:'1.0-0' }}% remplie</span>
+        </div>
+
+        <!-- Expandable Details -->
+        <div class="card-details" *ngIf="selectedTontineId() === tontine.id">
+          <div class="details-content">
+            <div class="detail-section">
+              <h4>À propos</h4>
+              <p>{{ tontine.descriptionTontine || 'Aucune description disponible.' }}</p>
+            </div>
+
+            <div class="detail-section">
+              <h4>Informations pratiques</h4>
+              <ul class="info-list">
+                <li><strong>Fréquence:</strong> {{ tontine.frequence || 'Mensuel' }}</li>
+                <li><strong>Montant:</strong> {{ tontine.montant | number:'1.0-0' }} FCFA</li>
+                <li><strong>Statut:</strong> {{ tontine.statutTontine || 'Active' }}</li>
+              </ul>
+            </div>
+
+            <div class="action-buttons">
+              <a routerLink="/inscription" class="btn-join">Créer un compte et rejoindre</a>
+              <a routerLink="/login" class="btn-login">Se connecter pour rejoindre</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Expand Indicator -->
+        <div class="expand-indicator" *ngIf="selectedTontineId() !== tontine.id">
+          <span>Cliquez pour plus de détails</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <polyline points="6 9 12 15 18 9"></polyline>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA Section -->
+  <section class="cta-section">
+    <div class="cta-content">
+      <h2>Prêt à rejoindre une tontine?</h2>
+      <p>Inscrivez-vous maintenant et commencez votre voyage vers l'épargne collective</p>
+      <div class="cta-buttons">
+        <a routerLink="/inscription" class="btn-large-primary">Créer un compte</a>
+        <a routerLink="/login" class="btn-large-secondary">J'ai déjà un compte</a>
+      </div>
+    </div>
+  </section>
+</div>
