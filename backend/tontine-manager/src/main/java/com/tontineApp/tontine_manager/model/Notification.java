@@ -48,10 +48,6 @@ public class Notification {
     @JoinColumn(name = "membre_id")
     private Membre membre;
 
-    @ManyToOne
-    @JoinColumn(name = "tontine_id")
-    private Tontine tontine;
-
     @Column(name = "statut_notification")
     @Enumerated(EnumType.STRING)
     private StatutNotification statutNotification;

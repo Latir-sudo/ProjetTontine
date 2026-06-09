@@ -15,9 +15,8 @@ public class NotificationMapper {
         notification.setTypeNotification(notificationRequest.getTypeNotification());
         notification.setLienAction(notificationRequest.getLienAction());
         notification.setEstLu(notificationRequest.getEstLu());
-        notification.setDateCreation(notification.getDateCreation());
-        notification.setCouleur(notification.getCouleur());
-        notification.setHeureRelative(notification.getHeureRelative());
+        notification.setCouleur(notificationRequest.getCouleur());
+        notification.setHeureRelative(notificationRequest.getTempsRelatif());
         notification.setMessage(notificationRequest.getMessage());
         notification.setTitre(notificationRequest.getTitre());
 
@@ -39,14 +38,11 @@ public class NotificationMapper {
         response.setTypeNotification(notification.getTypeNotification());
 
         if (notification.getMembre() != null) {
-            response.setIdMembre(notification.getMembre().getId());
-            response.setNomMembre(notification.getMembre().getUser().getNom());
-            response.setPrenomMembre(notification.getMembre().getUser().getPrenom());
-        }
-
-        if (notification.getTontine() != null) {
-            response.setIdTontine(notification.getTontine().getId());
-            response.setNomTontine(notification.getTontine().getNomTontine());
+            response.setIdUser(notification.getMembre().getId());
+            response.setNomUser(notification.getMembre().getUser().getNom());
+            response.setPrenomUser(notification.getMembre().getUser().getPrenom());
+            response.setNomTontine(notification.getMembre().getTontine().getNomTontine());
+            response.setIdTontine(notification.getMembre().getTontine().getId());
         }
 
         return response;

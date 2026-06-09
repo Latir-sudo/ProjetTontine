@@ -5,12 +5,14 @@ import com.tontineApp.tontine_manager.dto.NotificationResponse;
 import com.tontineApp.tontine_manager.exception.RessourceNotFoundException;
 import com.tontineApp.tontine_manager.mapper.NotificationMapper;
 import com.tontineApp.tontine_manager.model.Membre;
+import com.tontineApp.tontine_manager.model.Notification;
 import com.tontineApp.tontine_manager.repository.MembreRepository;
 import com.tontineApp.tontine_manager.repository.NotificationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -23,7 +25,10 @@ public class NotificationService {
     private final MembreRepository membreRepository;
 
     public NotificationResponse creerNotification(NotificationRequest notificationRequest) {
-        return notificationMapper.toNotificationResponse(notificationRepository.save(notificationMapper.toNotification(notificationRequest)));
+        Notification notification=notificationMapper.toNotification(notificationRequest);
+        notification.setDateCreation(LocalDate.now());
+
+        return notificationMapper.toNotificationResponse(notificationRepository.save(notification));
     }
 
     public void supprimerNotification(Integer id) {

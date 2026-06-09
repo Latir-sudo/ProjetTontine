@@ -13,7 +13,7 @@ public class NotificationRequest {
     private String couleur;
     private Boolean estLu;
     private Integer tontineId;
-    private Integer membreId;
+    private Integer idUser;
     private LocalDate dateCreation;
     private StatutNotification statutNotification;
     private String typeNotification;

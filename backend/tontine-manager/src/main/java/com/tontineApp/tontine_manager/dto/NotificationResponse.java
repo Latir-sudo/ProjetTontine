@@ -15,9 +15,9 @@ public class NotificationResponse {
     private Boolean estLu;
     private Integer idTontine;
     private String nomTontine;
-    private Integer idMembre;
-    private String prenomMembre;
-    private String nomMembre;
+    private Integer idUser;
+    private String prenomUser;
+    private String nomUser;
     private LocalDate dateCreation;
     private StatutNotification statutNotification;
     private String typeNotification;
