@@ -70,7 +70,8 @@ public class NotificationService {
         Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine, idUser)
                 .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur avec l'id " + idUser +
                         " n'est pas membre de la tontine avec l'id " + idTontine));
-
+        
+        //recuperer les notifications non lues de l'utilisateur dans la tontine
         List<Notification> notificationsNonLues = notificationRepository.findByMembre_IdAndEstLu(membre.getId(), false);
 
         for (Notification notification : notificationsNonLues) {
