@@ -33,7 +33,7 @@ public class NotificationService {
 
             Notification notification = notificationMapper.toNotification(notificationRequest);
             notification.setMembre(membre);
-            notification.setDateCreation(LocalDate.now());
+            notification.setDateCreation(LocalDateTime.now());
             Notification savedNotification = notificationRepository.save(notification);
             return notificationMapper.toNotificationResponse(savedNotification);
 
