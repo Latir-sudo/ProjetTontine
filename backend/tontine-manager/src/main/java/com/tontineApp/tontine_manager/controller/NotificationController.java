@@ -35,5 +35,12 @@ public class NotificationController {
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationResponse);
     }
 
+    @PatchMapping("/{notifcationId}/lire")
+    public ResponseEntity<NotificationResponse> marqueCommeLue(@PathVariable Integer notificationId){
+        NotificationResponse notification = notificationService.marquerLue(notificationId,true);
+        return ResponseEntity.ok(notification);
+
+    }
+
 
 }

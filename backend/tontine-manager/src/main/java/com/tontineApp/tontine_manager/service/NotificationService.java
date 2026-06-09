@@ -46,7 +46,7 @@ public class NotificationService {
 
     public List<NotificationResponse> getNotificationNonLues(Integer idUser,Integer idTontine) {
         Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
-        return notificationRepository.findByMembre_IdAndEstLu(membre.getId(),true).stream()
+        return notificationRepository.findByMembre_IdAndEstLu(membre.getId(),false).stream()
                 .map(notificationMapper::toNotificationResponse)
                 .toList();
     }
@@ -56,5 +56,11 @@ public class NotificationService {
     public void supprimerNotificationMembre(Integer idUser,Integer idTontine){
         Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
         notificationRepository.deleteByMembre_Id(membre.getId());
+    }
+
+    public NotificationResponse marquerLue(Integer idNotification,Boolean valeur){
+        Notification notification=notificationRepository.findById(idNotification).orElseThrow(()->new RessourceNotFoundException("notification "+idNotification+" non trouvé"));
+        notification.setEstLu(true);
+        return notificationMapper.toNotificationResponse(notification);
     }
 }
