@@ -28,12 +28,18 @@ public class NotificationController {
         List<NotificationResponse> notifications = notificationService.getNotificationNonLues(userId,tontineId);
         return ResponseEntity.ok(notifications);
     }
-
     @PostMapping
     public ResponseEntity<NotificationResponse> createNotification(@RequestBody NotificationRequest notificationRequest){
         NotificationResponse notificationResponse = notificationService.creerNotification(notificationRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(notificationResponse);
     }
+    @PatchMapping("/{notificationId}/lire")
+    public ResponseEntity<NotificationResponse> marqueCommeLue(@PathVariable Integer notificationId){
+        NotificationResponse notification = notificationService.marquerLue(notificationId,true);
+        return ResponseEntity.ok(notification);
+
+    }
+
 
 
 }
