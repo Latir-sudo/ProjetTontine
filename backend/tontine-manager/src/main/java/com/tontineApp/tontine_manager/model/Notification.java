@@ -42,7 +42,7 @@ public class Notification {
 
     @Column(name = "date_creation")
     @Builder.Default
-    private LocalDate dateCreation = LocalDate.now();
+    private LocalDateTime dateCreation = LocalDateTime.now();
 
     @ManyToOne
     @JoinColumn(name = "membre_id")
@@ -70,7 +70,8 @@ public class Notification {
             return heureRelative;
         }
 
-        LocalDate now = LocalDate.now();
+
+        LocalDateTime now = LocalDateTime.now();
         java.time.Duration duration = java.time.Duration.between(dateCreation, now);
 
         long heures = duration.toHours();

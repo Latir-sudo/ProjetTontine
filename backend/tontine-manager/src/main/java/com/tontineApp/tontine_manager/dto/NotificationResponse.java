@@ -4,6 +4,7 @@ import com.tontineApp.tontine_manager.enumeration.StatutNotification;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Data
 public class NotificationResponse {
@@ -18,7 +19,7 @@ public class NotificationResponse {
     private Integer idUser;
     private String prenomUser;
     private String nomUser;
-    private LocalDate dateCreation;
+    private LocalDateTime dateCreation;
     private StatutNotification statutNotification;
     private String typeNotification;
     private String lienAction;
