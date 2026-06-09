@@ -25,10 +25,16 @@ public class NotificationService {
     private final MembreRepository membreRepository;
 
     public NotificationResponse creerNotification(NotificationRequest notificationRequest) {
-        Notification notification=notificationMapper.toNotification(notificationRequest);
-        notification.setDateCreation(LocalDate.now());
 
-        return notificationMapper.toNotificationResponse(notificationRepository.save(notification));
+        final Membre membre = membreRepository.findByTontine_IdAndUser_Id(notificationRequest.getIdTontine(), notificationRequest.getIdUser())
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur avec l'id " + notificationRequest.getIdUser() + " n'est pas membre de la tontine avec l'id " + notificationRequest.getIdTontine()));
+
+            Notification notification = notificationMapper.toNotification(notificationRequest);
+            notification.setMembre(membre);
+            notification.setDateCreation(LocalDate.now());
+            Notification savedNotification = notificationRepository.save(notification);
+            return notificationMapper.toNotificationResponse(savedNotification);
+
     }
 
     public void supprimerNotification(Integer id) {
