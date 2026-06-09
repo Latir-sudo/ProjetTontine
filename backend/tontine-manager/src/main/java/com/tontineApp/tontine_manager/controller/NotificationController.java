@@ -37,9 +37,6 @@ public class NotificationController {
     public ResponseEntity<NotificationResponse> marqueCommeLue(@PathVariable Integer notificationId){
         NotificationResponse notification = notificationService.marquerLue(notificationId,true);
         return ResponseEntity.ok(notification);
-
     }
-
-
 
 }
