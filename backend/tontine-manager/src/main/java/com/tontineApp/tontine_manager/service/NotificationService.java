@@ -63,4 +63,21 @@ public class NotificationService {
         Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
         notificationRepository.deleteByMembre_Id(membre.getId());
     }
+
+
+    // Marquer toutes les notifications d'un membre comme lues
+    public void marquerToutesNotificationsCommeLues(Integer idUser, Integer idTontine) {
+        Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine, idUser)
+                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur avec l'id " + idUser +
+                        " n'est pas membre de la tontine avec l'id " + idTontine));
+
+        List<Notification> notificationsNonLues = notificationRepository.findByMembre_IdAndEstLu(membre.getId(), false);
+
+        for (Notification notification : notificationsNonLues) {
+            notification.setEstLu(true);
+            notification.setStatutNotification(StatutNotification.LU);
+        }
+        notificationRepository.saveAll(notificationsNonLues);
+    }
 }
+
