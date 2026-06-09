@@ -26,6 +26,8 @@ public class NotificationController {
     @GetMapping("user/{userId}/tontine/{tontineId}/non-lues")
     public ResponseEntity<List<NotificationResponse>> getNotificationsNonLues(@PathVariable Integer userId, @PathVariable Integer tontineId){
 
+        List<NotificationResponse> notifications = notificationService.getNotificationNonLues(userId,tontineId);
+        return ResponseEntity.ok(notifications);
     }
 
 
