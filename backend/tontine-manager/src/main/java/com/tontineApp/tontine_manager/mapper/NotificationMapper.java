@@ -1,6 +1,5 @@
 package com.tontineApp.tontine_manager.mapper;
 
-
 import com.tontineApp.tontine_manager.dto.NotificationRequest;
 import com.tontineApp.tontine_manager.dto.NotificationResponse;
 import com.tontineApp.tontine_manager.model.Notification;
@@ -14,13 +13,12 @@ public class NotificationMapper {
         notification.setStatutNotification(notificationRequest.getStatutNotification());
         notification.setTypeNotification(notificationRequest.getTypeNotification());
         notification.setLienAction(notificationRequest.getLienAction());
-        notification.setEstLu(notificationRequest.getEstLu());
+        notification.setEstLu(Boolean.TRUE.equals(notificationRequest.getEstLu()));
         notification.setCouleur(notificationRequest.getCouleur());
         notification.setHeureRelative(notificationRequest.getTempsRelatif());
         notification.setMessage(notificationRequest.getMessage());
         notification.setTitre(notificationRequest.getTitre());
 
-        // la mise a jour de tontine et membre se fera dans la couche service
         return notification;
     }
 
@@ -38,11 +36,16 @@ public class NotificationMapper {
         response.setTypeNotification(notification.getTypeNotification());
 
         if (notification.getMembre() != null) {
-            response.setIdUser(notification.getMembre().getId());
-            response.setNomUser(notification.getMembre().getUser().getNom());
-            response.setPrenomUser(notification.getMembre().getUser().getPrenom());
-            response.setNomTontine(notification.getMembre().getTontine().getNomTontine());
-            response.setIdTontine(notification.getMembre().getTontine().getId());
+            if (notification.getMembre().getUser() != null) {
+                response.setIdUser(notification.getMembre().getUser().getId());
+                response.setNomUser(notification.getMembre().getUser().getNom());
+                response.setPrenomUser(notification.getMembre().getUser().getPrenom());
+            }
+
+            if (notification.getMembre().getTontine() != null) {
+                response.setIdTontine(notification.getMembre().getTontine().getId());
+                response.setNomTontine(notification.getMembre().getTontine().getNomTontine());
+            }
         }
 
         return response;

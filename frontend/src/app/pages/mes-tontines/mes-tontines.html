@@ -1,97 +1,144 @@
-<div class="page-shell list-shell">
-  <header class="list-header">
-    <button class="back-link" routerLink="/dashboard">← Retour</button>
-    <div>
-      <span class="brand-pill">Mes tontines</span>
-      <h1>Liste de mes tontines</h1>
-      <p>Retrouvez ici toutes les tontines auxquelles vous avez adhéré.</p>
+<!-- mes-tontines.html -->
+<div class="page-shell max-w-6xl mx-auto px-4 py-8 font-sans">
+
+  <!-- ===== EN-TÊTE ===== -->
+  <header class="mb-10">
+    <div class="flex items-center gap-3 mb-4">
+      <a routerLink="/dashboard" class="text-[#003366] hover:underline text-sm flex items-center gap-2">
+        <i class="fas fa-arrow-left text-xs text-gray-600"></i> Retour
+      </a>
+    
     </div>
+
+    <h1 class="text-3xl font-bold text-[#003366] flex items-center gap-3">
+      <i class="fas fa-list-ul text-gray-700"></i> Liste de mes tontines
+    </h1>
+    <p class="text-gray-500 text-base mt-2 ml-1">
+      Retrouvez ici toutes les tontines auxquelles vous avez adhéré.
+    </p>
   </header>
 
-  <!-- Section recherche et filtres -->
-  <section class="search-panel">
-    <div class="search-box">
-      <input 
-        type="search" 
-        placeholder="Rechercher une tontine..." 
+  <!-- ===== BARRE DE RECHERCHE + FILTRES ===== -->
+  <div class="flex flex-wrap items-center gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+
+    <!-- Recherche -->
+    <div class="flex-1 min-w-[200px] relative">
+      <i class="fas fa-search absolute left-4 top-3.5 text-gray-400 text-sm"></i>
+      <input
+        type="text"
+        placeholder="Rechercher une tontine..."
         [(ngModel)]="searchText"
         (ngModelChange)="onSearchChange()"
+        class="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#003366]/20 focus:border-[#003366]"
       />
-      <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-        <circle cx="11" cy="11" r="8"></circle>
-        <path d="m21 21-4.35-4.35"></path>
-      </svg>
     </div>
-    
-    <div class="filter-actions">
-      <button class="outline-button" type="button" (click)="toggleFilters()">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-          <polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon>
-        </svg>
-        Filtres
-      </button>
-      
-      <select class="sort-select" [(ngModel)]="sortBy" (ngModelChange)="onSortChange()">
+
+    <!-- Filtres -->
+    <button
+      (click)="toggleFilters()"
+      class="flex items-center gap-2 px-5 py-3 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition"
+    >
+      <i class="fas fa-sliders-h text-gray-600"></i> Filtres
+    </button>
+
+    <!-- Tri -->
+    <div class="relative">
+      <i class="fas fa-sort-amount-down-alt absolute left-4 top-3.5 text-gray-400 text-sm"></i>
+      <select
+        class="pl-10 pr-4 py-3 text-sm border border-gray-200 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-[#003366]/20 appearance-none min-w-[180px]"
+        [(ngModel)]="sortBy"
+        (ngModelChange)="onSortChange()"
+      >
         <option *ngFor="let option of sortOptions" [value]="option.value">
-          Trier par: {{ option.label }}
+          Trier par : {{ option.label }}
         </option>
       </select>
     </div>
-  </section>
 
-  <!-- Barre de filtres -->
-  <div *ngIf="showFilters" class="filter-bar">
-    <button
-      type="button"
-      class="filter-chip"
-      *ngFor="let filter of filters"
-      [class.active]="selectedFilter === filter"
-      (click)="setFilter(filter)">
-      {{ filter }}
+    <!-- Bouton Rejoindre -->
+    <button routerLink="/tontine-availables" class="ml-auto px-6 py-3 text-sm font-semibold text-white bg-[#FF7F50] rounded-lg hover:bg-[#e06b3e] transition shadow-sm flex items-center gap-2">
+      <i class="fas fa-plus-circle"></i> Rejoindre
     </button>
   </div>
 
-  <!-- Indicateur de chargement -->
-  <div *ngIf="isLoading" class="loading-spinner">
-    <div class="spinner"></div>
-    <p>Chargement de vos tontines...</p>
+  <!-- ===== BARRE DE FILTRES (catégories) ===== -->
+  <div *ngIf="showFilters" class="flex flex-wrap gap-3 mb-8">
+    <button
+      *ngFor="let filter of filters"
+      class="px-5 py-2 text-sm rounded-full border transition flex items-center gap-2"
+      [class]="selectedFilter === filter ? 'bg-[#003366] text-white border-[#003366]' : 'bg-white text-gray-600 border-gray-200 hover:border-[#003366]'"
+      (click)="setFilter(filter)"
+    >
+      <i class="fas fa-tag text-xs text-gray-500"></i> {{ filter }}
+    </button>
   </div>
 
-  <!-- Aucune tontine -->
-  <div *ngIf="!isLoading && filteredTontines.length === 0" class="empty-state">
-    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-      <circle cx="11" cy="11" r="8"></circle>
-      <path d="m21 21-4.35-4.35"></path>
-    </svg>
-    <h3>Aucune tontine trouvée</h3>
-    <p>Vous n'avez pas encore rejoint de tontine ou aucune ne correspond à vos critères.</p>
-    <button routerLink="/available-tontines" class="primary-button">Découvrir des tontines</button>
+  <!-- ===== ÉTAT DE CHARGEMENT ===== -->
+  <div *ngIf="isLoading" class="text-center py-16">
+    <div class="inline-block w-10 h-10 border-4 border-[#003366] border-t-transparent rounded-full animate-spin"></div>
+    <p class="mt-4 text-gray-500 text-sm flex items-center justify-center gap-2">
+      <i class="fas fa-spinner fa-spin text-gray-400"></i> Chargement de vos tontines...
+    </p>
   </div>
 
-  <!-- Liste des tontines -->
-  <div class="tontine-cards" *ngIf="!isLoading && filteredTontines.length > 0">
-    <article *ngFor="let tontine of filteredTontines" class="tontine-card">
-      <div class="card-top">
-        <div>
-          <p class="tontine-type">{{ tontine.categorie || 'Générale' }}</p>
-          <h2>{{ tontine.nomTontine }}</h2>
-        </div>
-        <span class="tontine-amount">{{ tontine.montant | number }} FCFA</span>
-      </div>
-      
-      <div class="card-meta">
-        <span>📍 {{ tontine.region || 'Sénégal' }}</span>
-        <span>👥 {{ tontine.nombreMembres || 0 }} membres</span>
-        <span>🔄 {{ tontine.frequence || 'Mensuel' }}</span>
-      </div>
-      
-      <div class="card-description" *ngIf="tontine.descriptionTontine">
-        {{ tontine.descriptionTontine | slice:0:100 }}{{ tontine.descriptionTontine.length > 100 ? '...' : '' }}
-      </div>
-      
-      <button class="primary-button" type="button" (click)="viewDetails(tontine.id)">
-        Voir les détails
+  <!-- ===== LISTE DES TONTINES ===== -->
+  <div *ngIf="!isLoading">
+
+    <!-- Aucune tontine -->
+    <div *ngIf="filteredTontines.length === 0" class="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+      <i class="fas fa-inbox text-6xl text-gray-300 mb-4"></i>
+      <h3 class="text-xl font-semibold text-gray-700">Aucune tontine trouvée</h3>
+      <p class="text-sm text-gray-500 max-w-md mx-auto mt-2">
+        Vous n'avez pas encore rejoint de tontine ou aucune ne correspond à vos critères.
+      </p>
+      <button routerLink="/tontine-availables" class="mt-6 px-6 py-3 text-sm font-semibold text-white bg-[#FF7F50] rounded-lg hover:bg-[#e06b3e] transition flex items-center gap-2 mx-auto">
+        <i class="fas fa-search"></i> Découvrir des tontines
       </button>
-    </article>
+    </div>
+
+    <!-- ===== GRILLE DES CARTES ===== -->
+    <div *ngIf="filteredTontines.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div
+        *ngFor="let tontine of filteredTontines"
+        class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 hover:shadow-lg transition cursor-pointer"
+        (click)="viewDetails(tontine.id)"
+      >
+        <!-- Catégorie + Montant -->
+        <div class="flex justify-between items-start mb-3">
+          <span class="text-xs font-semibold text-[#FF7F50] uppercase flex items-center gap-1.5 bg-orange-50 px-3 py-1 rounded-full">
+            <i class="fas fa-tag text-[#FF7F50]"></i> {{ tontine.categorie || 'Générale' }}
+          </span>
+          <span class="text-base font-bold text-[#FF7F50] flex items-center gap-1.5">
+            <i class="fas fa-coin text-[#FF7F50]"></i> {{ tontine.montant | number }} FCFA
+          </span>
+        </div>
+
+        <!-- Titre -->
+        <h3 class="text-xl font-semibold text-[#003366] mb-3">{{ tontine.nomTontine }}</h3>
+
+        <!-- Métadonnées (localisation, membres, fréquence) -->
+        <div class="flex flex-wrap gap-4 text-sm text-gray-500 border-t border-gray-50 pt-3 mt-2">
+          <span class="flex items-center gap-1.5"><i class="fas fa-map-marker-alt text-gray-500"></i> {{ tontine.region || 'Sénégal' }}</span>
+          <span class="flex items-center gap-1.5"><i class="fas fa-users text-gray-500"></i> {{ tontine.nombreMembres || 0 }}/{{ tontine.nombreMax || '?' }}</span>
+          <span class="flex items-center gap-1.5"><i class="fas fa-clock text-gray-500"></i> {{ tontine.frequence || 'Mensuel' }}</span>
+        </div>
+
+        <!-- Description -->
+        <p *ngIf="tontine.descriptionTontine" class="text-sm text-gray-600 mt-3 line-clamp-2 flex items-start gap-2">
+          <i class="fas fa-align-left text-gray-400 text-xs mt-1"></i>
+          <span>{{ tontine.descriptionTontine }}</span>
+        </p>
+
+        <!-- Bouton Voir détails -->
+        <button
+          class="mt-5 w-full py-3 text-sm font-medium text-white bg-[#003366] rounded-lg hover:bg-[#002244] transition flex items-center justify-center gap-2"
+          (click)="$event.stopPropagation(); viewDetails(tontine.id)"
+        >
+          <i class="fas fa-eye"></i> Voir les détails
+        </button>
+      </div>
+    </div>
+
   </div>
+
 </div>

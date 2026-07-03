@@ -35,7 +35,6 @@ export class ApiService {
     );
   }
 
-   // ✅ AJOUTEZ CETTE MÉTHODE PATCH
   async patch<T>(endpoint: string, data: any): Promise<T> {
     return firstValueFrom(
       this.http.patch<T>(`${this.baseUrl}${endpoint}`, data, { headers: this.getHeaders() })

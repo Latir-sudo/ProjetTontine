@@ -2,6 +2,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
 
 interface Tontine {
   id: number;
@@ -71,13 +72,16 @@ export class Administration implements OnInit {
     private apiService: ApiService,
     private route: ActivatedRoute,
     private router: Router,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      await this.loadData(parseInt(id, 10));
+      const tontineId = parseInt(id, 10);
+      this.notificationService.setCurrentTontineId(tontineId);
+      await this.loadData(tontineId);
     } else {
       this.errorMessage = 'ID de tontine non trouve';
       this.isLoading = false;

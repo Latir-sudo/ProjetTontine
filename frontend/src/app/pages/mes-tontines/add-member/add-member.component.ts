@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
+import { NotificationService } from '../../../services/notification.service';
 
 interface Utilisateurs {
   id?: number;
@@ -47,6 +48,7 @@ export class AddMemberComponent implements OnInit {
     private apiService: ApiService,
     private router: Router,
     private route: ActivatedRoute,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -62,6 +64,10 @@ export class AddMemberComponent implements OnInit {
 
     try {
       const tontineId = this.route.snapshot.paramMap.get('id');
+      if (tontineId) {
+        this.notificationService.setCurrentTontineId(tontineId);
+      }
+
       const [utilisateurs] = await Promise.all([
         this.apiService.get<Utilisateurs[]>('/users'),
         tontineId ? this.loadExistingMembers(tontineId) : Promise.resolve()

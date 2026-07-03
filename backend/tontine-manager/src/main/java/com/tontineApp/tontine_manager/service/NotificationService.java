@@ -26,69 +26,84 @@ public class NotificationService {
     private final MembreRepository membreRepository;
 
     public NotificationResponse creerNotification(NotificationRequest notificationRequest) {
+        Membre membre = getMembre(notificationRequest.getIdUser(), notificationRequest.getIdTontine());
 
-        final Membre membre = membreRepository.findByTontine_IdAndUser_Id(notificationRequest.getIdTontine(), notificationRequest.getIdUser())
-                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur avec l'id " + notificationRequest.getIdUser() + " n'est pas membre de la tontine avec l'id " + notificationRequest.getIdTontine()));
+        Notification notification = notificationMapper.toNotification(notificationRequest);
+        notification.setMembre(membre);
+        notification.setDateCreation(LocalDateTime.now());
 
-        System.out.println("test si cette méthode se trouve le problème");
+        if (notification.getStatutNotification() == null) {
+            notification.setStatutNotification(Boolean.TRUE.equals(notification.getEstLu())
+                    ? StatutNotification.LU
+                    : StatutNotification.NON_LU);
+        }
 
-            Notification notification = notificationMapper.toNotification(notificationRequest);
-            notification.setMembre(membre);
-            notification.setDateCreation(LocalDateTime.now());
-            Notification savedNotification = notificationRepository.save(notification);
-            return notificationMapper.toNotificationResponse(savedNotification);
-
+        Notification savedNotification = notificationRepository.save(notification);
+        return notificationMapper.toNotificationResponse(savedNotification);
     }
 
     public void supprimerNotification(Integer id) {
+        if (!notificationRepository.existsById(id)) {
+            throw new RessourceNotFoundException("Notification " + id + " non trouvee");
+        }
+
         notificationRepository.deleteById(id);
     }
 
-    public List<NotificationResponse> getNotificationMembres(Integer idUser,Integer idTontine) {
-        Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
+    public List<NotificationResponse> getNotificationMembres(Integer idUser, Integer idTontine) {
+        Membre membre = getMembre(idUser, idTontine);
+
         return notificationRepository.findByMembre_Id(membre.getId()).stream()
                 .map(notificationMapper::toNotificationResponse)
                 .toList();
     }
 
-    // récupérer les notifications non lues de l'utilisateur dans une tontine
+    public List<NotificationResponse> getNotificationNonLues(Integer idUser, Integer idTontine) {
+        Membre membre = getMembre(idUser, idTontine);
 
-    public List<NotificationResponse> getNotificationNonLues(Integer idUser,Integer idTontine) {
-        Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
-        return notificationRepository.findByMembre_IdAndEstLu(membre.getId(),false).stream()
+        return notificationRepository.findByMembre_IdAndEstLu(membre.getId(), false).stream()
                 .map(notificationMapper::toNotificationResponse)
                 .toList();
     }
 
-    // supprimer toutes les notifications d'un membres
+    public long compterNotificationsNonLues(Integer idUser, Integer idTontine) {
+        Membre membre = getMembre(idUser, idTontine);
+        return notificationRepository.findByMembre_IdAndEstLu(membre.getId(), false).size();
+    }
 
-    public void supprimerNotificationMembre(Integer idUser,Integer idTontine){
-        Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine,idUser).orElseThrow(()->new RessourceNotFoundException("l'utilisateu "+idUser+" n'est pas membre de la tontine "+idTontine));
+    public void supprimerNotificationMembre(Integer idUser, Integer idTontine) {
+        Membre membre = getMembre(idUser, idTontine);
         notificationRepository.deleteByMembre_Id(membre.getId());
     }
 
+    public NotificationResponse marquerLue(Integer idNotification, Boolean valeur) {
+        Notification notification = notificationRepository.findById(idNotification)
+                .orElseThrow(() -> new RessourceNotFoundException("Notification " + idNotification + " non trouvee"));
 
-    public NotificationResponse marquerLue(Integer idNotification,Boolean valeur) {
-        Notification notification = notificationRepository.findById(idNotification).orElseThrow(() -> new RessourceNotFoundException("notification " + idNotification + " non trouvé"));
-        notification.setEstLu(true);
-        return notificationMapper.toNotificationResponse(notification);
+        boolean estLu = Boolean.TRUE.equals(valeur);
+        notification.setEstLu(estLu);
+        notification.setStatutNotification(estLu ? StatutNotification.LU : StatutNotification.NON_LU);
+
+        Notification savedNotification = notificationRepository.save(notification);
+        return notificationMapper.toNotificationResponse(savedNotification);
     }
 
-    // Marquer toutes les notifications d'un membre comme lues
     public void marquerToutesNotificationsCommeLues(Integer idUser, Integer idTontine) {
-        Membre membre = membreRepository.findByTontine_IdAndUser_Id(idTontine, idUser)
-                .orElseThrow(() -> new RessourceNotFoundException("L'utilisateur avec l'id " + idUser +
-                        " n'est pas membre de la tontine avec l'id " + idTontine));
-
-        //recuperer les notifications non lues de l'utilisateur dans la tontine
+        Membre membre = getMembre(idUser, idTontine);
         List<Notification> notificationsNonLues = notificationRepository.findByMembre_IdAndEstLu(membre.getId(), false);
 
         for (Notification notification : notificationsNonLues) {
             notification.setEstLu(true);
             notification.setStatutNotification(StatutNotification.LU);
         }
-        notificationRepository.saveAll(notificationsNonLues);
 
+        notificationRepository.saveAll(notificationsNonLues);
+    }
+
+    private Membre getMembre(Integer idUser, Integer idTontine) {
+        return membreRepository.findByTontine_IdAndUser_Id(idTontine, idUser)
+                .orElseThrow(() -> new RessourceNotFoundException(
+                        "L'utilisateur avec l'id " + idUser + " n'est pas membre de la tontine avec l'id " + idTontine
+                ));
     }
 }
-

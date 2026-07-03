@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.services';
+import { NotificationService } from '../../services/notification.service';
 
 interface Tontine {
   id: number;
@@ -56,13 +57,16 @@ export class DetailTontine implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private authService: AuthService,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
   async ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
-      await this.loadTontineDetail(parseInt(id));
+      const tontineId = parseInt(id, 10);
+      this.notificationService.setCurrentTontineId(tontineId);
+      await this.loadTontineDetail(tontineId);
       await this.checkIfJoined();
       await this.checkIfAdmin();
       if (this.isAdmin) {

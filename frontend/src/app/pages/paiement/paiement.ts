@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { NotificationService } from '../../services/notification.service';
 
 
 
@@ -35,7 +36,12 @@ export class Paiement implements OnInit {
   isLoading: boolean=false;
   errorMessage:string='';
 
-  constructor(private router: Router,private route:ActivatedRoute,private apiService:ApiService){}
+  constructor(
+    private router: Router,
+    private route:ActivatedRoute,
+    private apiService:ApiService,
+    private notificationService: NotificationService
+  ){}
 
   async ngOnInit() {
     const tontineId=this.route.snapshot.paramMap.get('id');
@@ -46,7 +52,9 @@ export class Paiement implements OnInit {
       return ;
     }
 
-    await this.loadTontineData(parseInt(tontineId));
+    const parsedTontineId = parseInt(tontineId, 10);
+    this.notificationService.setCurrentTontineId(parsedTontineId);
+    await this.loadTontineData(parsedTontineId);
 
   }
 

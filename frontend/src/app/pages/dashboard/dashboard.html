@@ -1,73 +1,74 @@
-<div class="page-shell">
-  <!-- Hero section -->
-  <section class="hero-card">
-    <div class="hero-copy">
-      <p class="hero-pretitle">Bonjour, {{ currentUser?.prenom || currentUser?.nom }}</p>
-      <h2 class="text-xl">Gérez vos tontines facilement</h2>
+<!-- dashboard.html -->
+<div class="max-w-6xl mx-auto px-4 py-6 font-sans">
+
+  <!-- ===== HERO ===== -->
+  <section class="box-haut text-white rounded-3xl px-8 py-6 flex flex-wrap justify-between items-center gap-4 mb-6">
+    <div>
+      <p class="text-blue-200 text-sm">Bonjour, <span class="font-semibold text-white">{{ currentUser?.prenom || currentUser?.nom }}</span></p>
+      <h1 class="text-2xl font-bold">Gérez vos tontines facilement</h1>
     </div>
-    <div class="hero-statuses">
-      <article class="status-card">
-        <span class="status-label">Total cotisé</span>
-        <strong>{{ totalCotise | number }} F</strong>
-      </article>
-      <article class="status-card">
-        <span class="status-label">Mes tontines</span>
-        <strong>{{ mesTontines.length }}</strong>
-      </article>
-    </div>
-  </section>
-  
-  <!-- Mes tontines -->
-  <section class="section-card">
-    <div class="section-header">
-      <p class="section-label">Mes tontines</p>
-      <div>
-        
-        <button class="outline-button" routerLink="/tontine-availables">+ Rejoindre</button>
+    <div class="flex gap-4">
+      <div class="bg-white rounded-2xl px-6 py-3 text-center min-w-[120px] shadow-md">
+        <span class="block text-gray-500 text-xs uppercase tracking-wide">Total cotisé</span>
+        <strong class="text-xl font-bold text-[#003366] block mt-0.5">{{ totalCotise | number }} F</strong>
+      </div>
+      <div class="bg-white rounded-2xl px-6 py-3 text-center min-w-[120px] shadow-md">
+        <span class="block text-gray-500 text-xs uppercase tracking-wide">Mes tontines</span>
+        <strong class="text-xl font-bold text-[#003366] block mt-0.5">{{ mesTontines.length }}</strong>
       </div>
     </div>
+  </section>
 
-    <!-- Affichage pendant le chargement -->
-    <div *ngIf="isLoading" class="loading-spinner">
-      Chargement de vos tontines...
+  <!-- ===== MES TONTINES ===== -->
+  <section class="bg-white border border-gray-200 rounded-3xl px-6 py-6 mb-6">
+    <div class="flex justify-between items-center mb-2">
+      <h2 class="text-lg font-bold text-gray-800">Mes tontines</h2>
+      <button routerLink="/tontine-availables" class="bg-[#FF7F50] text-white text-sm font-semibold px-5 py-2.5 rounded-2xl shadow-sm hover:bg-[#e06b3e] transition">
+        + Rejoindre
+      </button>
+    </div>
+    <p class="text-gray-500 text-sm mb-5">Suivez vos contributions et rejoignez facilement de nouvelles tontines.</p>
+
+    <!-- Chargement -->
+    <div *ngIf="isLoading" class="flex flex-col items-center py-10 gap-2">
+      <div class="w-8 h-8 border-4 border-gray-200 border-t-[#003366] rounded-full animate-spin"></div>
+      <p class="text-gray-400 text-sm">Chargement de vos tontines...</p>
     </div>
 
-    <!-- Affichage une fois chargé -->
+    <!-- Liste -->
     <div *ngIf="!isLoading">
-      <!-- DEBUG: Afficher les données brutes -->
-      <div style="background: #f0f0f0; padding: 10px; margin: 10px; font-size: 12px; display: none;">
-        Nombre de tontines: {{ mesTontines.length }}<br>
-        Données: {{ mesTontines | json }}
+      <div *ngIf="mesTontines.length === 0" class="text-center py-10">
+        <p class="text-gray-400 mb-3">Vous n'avez pas encore rejoint de tontine.</p>
+        <button routerLink="/tontine-availables" class="bg-[#FF7F50] text-white text-sm font-semibold px-5 py-2.5 rounded-2xl hover:bg-[#e06b3e] transition">
+          Découvrir des tontines
+        </button>
       </div>
-      
-      <div class="tontine-list" *ngIf="mesTontines.length > 0; else noTontines">
-        <article class="tontine-item" *ngFor="let tontine of mesTontines">
-          <div class="tontine-item-main">
-            <div>
-              <h2>{{ tontine.nomTontine || 'Sans nom' }}</h2>
-              <p>{{ tontine.nombreMembres || 0}} /{{tontine.nombreMax}} membres</p>
-            </div>
-            <span class="tontine-amount">{{ tontine.montant | number }} FCFA</span>
+
+      <div *ngIf="mesTontines.length > 0" class="space-y-3">
+        <div
+          *ngFor="let tontine of mesTontines"
+          class="bg-gray-50 border border-gray-200 rounded-2xl px-5 py-4 cursor-pointer hover:border-[#003366] hover:shadow-md transition"
+          (click)="viewDetails(tontine.id)"
+        >
+          <div class="flex flex-wrap justify-between items-start gap-2">
+            <span class="font-semibold text-gray-800 text-base">{{ tontine.nomTontine || 'Sans nom' }}</span>
+            <span class="font-bold text-[#FF7F50] text-base">{{ tontine.montant | number }} FCFA</span>
           </div>
-          <p class="tontine-meta">
-            Fréquence: {{ tontine.frequence || 'Non spécifiée' }} | 
-            Catégorie: {{ tontine.categorie || 'Générale' }}
-          </p>
-          <p class="tontine-meta" *ngIf="tontine.descriptionTontine">
-            {{ tontine.descriptionTontine }}
-          </p>
-        </article>
-      </div>
-      <ng-template #noTontines>
-        <div class="empty-state">
-          <p>Vous n'avez pas encore de tontine.</p>
-          <button routerLink="/available-tontines" class="primary-button">Rejoindre une tontine</button>
+          <div class="flex items-center gap-1.5 text-sm text-gray-500 mt-1">
+            <span class="inline-block w-2 h-2 bg-green-500 rounded-full"></span>
+            {{ tontine.nombreMembres || 0 }}/{{ tontine.nombreMax || '?' }} membres
+          </div>
+          <div class="mt-2">
+            <span class="inline-block text-xs font-bold uppercase tracking-wide text-[#003366] bg-blue-50 px-3 py-1 rounded-full">
+              {{ tontine.categorie || 'Générale' }}
+            </span>
+          </div>
         </div>
-      </ng-template>
+      </div>
     </div>
   </section>
 
-  <!-- Tontines disponibles -->
+  <!-- ===== TONTINES DISPONIBLES (DESIGN ORIGINAL INCHANGÉ) ===== -->
   <section class="section-card explore-section">
     <div class="explore-header">
       <div>
@@ -76,19 +77,20 @@
       </div>
       <a routerLink="/tontine-availables" class="explore-button">Voir toutes les tontines →</a>
     </div>
-    
+
     <div *ngIf="isLoading" class="loading-spinner">
-      Chargement des tontines disponibles...
+      <div class="spinner"></div>
+      <p>Chargement des tontines disponibles...</p>
     </div>
-    
+
     <div *ngIf="!isLoading">
       <div class="explore-preview" *ngIf="tontinesDisponibles.length > 0; else noAvailable">
         <div class="preview-card" *ngFor="let tontine of tontinesDisponibles.slice(0, 3)">
           <div class="preview-badge">{{ tontine.categorie || 'Populaire' }}</div>
           <h3>{{ tontine.nomTontine }}</h3>
-          <p class="preview-meta">{{ tontine.nombreMembres || 0 }} membres   {{ tontine.montant | number }} FCFA/{{ tontine.frequence || 'mois' }}</p>
+          <p class="preview-meta">{{ tontine.nombreMembres || 0 }} membres • {{ tontine.montant | number }} FCFA/{{ tontine.frequence || 'mois' }}</p>
           <p class="preview-description">{{ tontine.descriptionTontine || 'Rejoignez cette tontine' }}</p>
-          <button [routerLink]="['/tontine',tontine.id]" class="preview-join-btn">Découvrir</button>
+          <button [routerLink]="['/tontine', tontine.id]" class="preview-join-btn">Découvrir</button>
         </div>
       </div>
       <ng-template #noAvailable>
@@ -99,4 +101,5 @@
       </ng-template>
     </div>
   </section>
+
 </div>

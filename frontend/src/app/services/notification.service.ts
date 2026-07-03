@@ -1,56 +1,118 @@
 // src/app/services/notification.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { Notification } from '../models/notification.model';
+import { AuthService } from './auth.services';
+
+export interface NotificationRequest {
+  titre: string;
+  message: string;
+  tempsRelatif?: string;
+  couleur?: string;
+  estLu?: boolean;
+  idTontine: number;
+  idUser: number;
+  dateCreation?: string;
+  statutNotification?: string;
+  typeNotification?: string;
+  lienAction?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class NotificationService {
-  private apiUrl = 'http://localhost:8080/api/notifications'; // Adaptez à votre URL backend
+  private apiUrl = 'http://localhost:8080/api/notifications';
+  private currentTontineStorageKey = 'currentNotificationTontineId';
 
-  constructor(private http: HttpClient) {}
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService
+  ) {}
 
-  // Récupérer toutes les notifications du membre connecté
-  getNotifications(): Observable<Notification[]> {
-    const membreId = this.getCurrentMembreId(); // À implémenter selon votre système d'auth
-    return this.http.get<Notification[]>(`${this.apiUrl}/membre/${membreId}`);
+  // Recuperer toutes les notifications d'un utilisateur dans une tontine.
+  getNotifications(userId = this.getCurrentUserId(), tontineId = this.getCurrentTontineId()): Observable<Notification[]> {
+    if (!this.hasNotificationContext(userId, tontineId)) {
+      return this.missingContextError();
+    }
+
+    return this.http.get<Notification[]>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}`);
   }
 
-  // Récupérer les notifications non lues
-  
-  getUnreadNotifications(): Observable<Notification[]> {
-    const membreId = this.getCurrentMembreId();
-    return this.http.get<Notification[]>(`${this.apiUrl}/membre/${membreId}/non-lues`);
+  // Recuperer les notifications non lues d'un utilisateur dans une tontine.
+  getUnreadNotifications(userId = this.getCurrentUserId(), tontineId = this.getCurrentTontineId()): Observable<Notification[]> {
+    if (!this.hasNotificationContext(userId, tontineId)) {
+      return this.missingContextError();
+    }
+
+    return this.http.get<Notification[]>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}/non-lues`);
   }
 
-  // Compter les notifications non lues
-  getUnreadCount(): Observable<number> {
-    const membreId = this.getCurrentMembreId();
-    return this.http.get<number>(`${this.apiUrl}/membre/${membreId}/non-lues/count`);
+  getUnreadCount(userId = this.getCurrentUserId(), tontineId = this.getCurrentTontineId()): Observable<number> {
+    if (!this.hasNotificationContext(userId, tontineId)) {
+      return this.missingContextError();
+    }
+
+    return this.http.get<number>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}/non-lues/count`);
   }
 
-  // Marquer une notification comme lue
+  // Marquer une notification comme lue.
   markAsRead(notificationId: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${notificationId}/lire`, {});
+    return this.http.patch<void>(`${this.apiUrl}/${notificationId}/lire`, {});
   }
 
-  // Tout marquer comme lu
-  markAllAsRead(): Observable<void> {
-    const membreId = this.getCurrentMembreId();
-    return this.http.put<void>(`${this.apiUrl}/membre/${membreId}/lire-tout`, {});
+  // Marquer une notification comme non lue.
+  markAsUnread(notificationId: number): Observable<void> {
+    return this.http.patch<void>(`${this.apiUrl}/${notificationId}/non-lire`, {});
   }
 
-  // Supprimer une notification
+  // Tout marquer comme lu pour un utilisateur dans une tontine.
+  markAllAsRead(userId = this.getCurrentUserId(), tontineId = this.getCurrentTontineId()): Observable<void> {
+    if (!this.hasNotificationContext(userId, tontineId)) {
+      return this.missingContextError();
+    }
+
+    return this.http.patch<void>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}/lire-tout`, {});
+  }
+
+  // Creer une notification.
+  createNotification(notification: NotificationRequest): Observable<Notification> {
+    return this.http.post<Notification>(this.apiUrl, notification);
+  }
+
+  setCurrentTontineId(tontineId: number | string): void {
+    const normalizedTontineId = Number(tontineId);
+
+    if (Number.isFinite(normalizedTontineId)) {
+      localStorage.setItem(this.currentTontineStorageKey, normalizedTontineId.toString());
+    }
+  }
+
   deleteNotification(notificationId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${notificationId}`);
   }
 
-  // Récupérer l'ID du membre connecté (à adapter selon votre système d'authentification)
-  private getCurrentMembreId(): number {
-    // Exemple: récupérer depuis le localStorage ou le token JWT
-    const membreId = localStorage.getItem('membreId');
-    return membreId ? parseInt(membreId) : 1; // Valeur par défaut pour test
+  private getCurrentUserId(): number | null {
+    return this.authService.currentUser()?.id ?? this.authService.refreshUser()?.id ?? null;
+  }
+
+  private getCurrentTontineId(): number | null {
+    const storedTontineId =
+      localStorage.getItem(this.currentTontineStorageKey) ||
+      localStorage.getItem('tontineId') ||
+      localStorage.getItem('idTontine') ||
+      sessionStorage.getItem('tontineId') ||
+      sessionStorage.getItem('idTontine');
+
+    return storedTontineId ? Number(storedTontineId) : null;
+  }
+
+  private hasNotificationContext(userId: number | null, tontineId: number | null): userId is number {
+    return Number.isFinite(userId) && Number.isFinite(tontineId);
+  }
+
+  private missingContextError<T>(): Observable<T> {
+    return throwError(() => new Error('Impossible de charger les notifications sans userId et tontineId.'));
   }
 }

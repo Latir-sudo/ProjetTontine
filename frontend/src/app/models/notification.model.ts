@@ -6,7 +6,13 @@ export interface Notification {
   tempsRelatif: string;
   couleur: string;
   estLu: boolean;
+  idTontine?: number;
+  nomTontine?: string;
+  idUser?: number;
+  prenomUser?: string;
+  nomUser?: string;
   dateCreation: string;
+  statutNotification?: string;
   typeNotification: string;
   lienAction?: string;
 }

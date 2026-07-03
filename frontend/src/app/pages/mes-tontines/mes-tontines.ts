@@ -5,6 +5,7 @@ import { RouterLink, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ApiService } from '../../services/api.service';
 import { AuthService } from '../../services/auth.services';
+import { NotificationService } from '../../services/notification.service';
 
 interface Tontine {
   id: number;
@@ -55,6 +56,7 @@ export class MesTontines implements OnInit {
     private apiService: ApiService,
     private authService: AuthService,
     private router: Router,
+    private notificationService: NotificationService,
     private cdr: ChangeDetectorRef
   ) {}
 
@@ -158,6 +160,7 @@ export class MesTontines implements OnInit {
   }
 
   viewDetails(tontineId: number) {
+    this.notificationService.setCurrentTontineId(tontineId);
     this.router.navigate(['/tontine', tontineId]);
   }
 

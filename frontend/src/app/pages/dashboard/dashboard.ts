@@ -220,6 +220,12 @@ export class Dashboard implements OnInit, OnDestroy {
     }
   }
 
+  // dashboard.component.ts – Ajouter cette méthode
+viewDetails(tontineId: number) {
+  // Rediriger vers la page de détail
+  this.router.navigate(['/tontine', tontineId]);
+}
+
   getProchainPaiement(tontineId: number): number {
     return 7;
   }
