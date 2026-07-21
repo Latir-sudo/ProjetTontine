@@ -1,73 +1,97 @@
-<div class="page-shell history-shell mt-10">
-  <header class="page-header">
-    <button class="back-link" routerLink="/">← Retour</button>
-    <div>
-      <span class="brand-pill">Historique cotisation</span>
-      <h1>Historique des cotisations</h1>
-      <p>Retrouvez ici l'historique de tous vos paiements.</p>
-    </div>
-  </header>
+<div class="page-shell">
+  <div class="list-header">
+    <a routerLink="/dashboard" class="back-link">
+      <i class="fas fa-arrow-left"></i> Retour
+    </a>
 
-  <!-- Chargement -->
-  <div *ngIf="isLoading" class="loading-state">
+    <span class="brand-pill">Historique</span>
+    <h1>Historique des cotisations</h1>
+    <p>Retrouvez ici l'historique visuelle et structurée de tous vos paiements.</p>
+  </div>
+
+  <div *ngIf="stats" class="history-summary">
+    <div class="stat-card">
+      <span>Total payé</span>
+      <strong>{{ stats.totalPaye | number }} FCFA</strong>
+    </div>
+    <div class="stat-card">
+      <span>Attendu</span>
+      <strong>{{ stats.totalAttendu | number }} FCFA</strong>
+    </div>
+    <div class="stat-card">
+      <span>Progression</span>
+      <strong>{{ getProgressPercentage() | number:'1.0-0' }}%</strong>
+    </div>
+  </div>
+
+  <div *ngIf="isLoading" class="loading-spinner">
     <div class="spinner"></div>
     <p>Chargement de votre historique...</p>
   </div>
 
-  <!-- Erreur -->
-  <div *ngIf="errorMessage" class="error-state">
-    <span class="error-icon"></span>
+  <div *ngIf="errorMessage" class="error-panel">
+    <i class="fas fa-exclamation-circle error-icon"></i>
     <p>{{ errorMessage }}</p>
-    <button (click)="loadHistorique()" class="retry-btn">Réessayer</button>
+    <button (click)="loadHistorique()" class="primary-button retry-button">
+      <i class="fas fa-sync-alt"></i> Réessayer
+    </button>
   </div>
 
-  <!-- Filtres simples -->
-  <div *ngIf="!isLoading && !errorMessage && payments.length > 0" class="history-tabs">
-    <button [class.active]="filter === 'all'" (click)="setFilter('all')">Tous</button>
-    <button [class.active]="filter === 'success'" (click)="setFilter('success')">Réussis</button>
-    <button [class.active]="filter === 'pending'" (click)="setFilter('pending')">En attente</button>
+  <div *ngIf="!isLoading && !errorMessage && payments.length > 0" class="filter-bar">
+    <button type="button" class="filter-chip" [ngClass]="{ active: filter === 'all' }" (click)="setFilter('all')">
+      <i class="fas fa-list"></i> Tous
+    </button>
+    <button type="button" class="filter-chip" [ngClass]="{ active: filter === 'success' }" (click)="setFilter('success')">
+      <i class="fas fa-check-circle"></i> Réussis
+    </button>
+    <button type="button" class="filter-chip" [ngClass]="{ active: filter === 'pending' }" (click)="setFilter('pending')">
+      <i class="fas fa-clock"></i> En attente
+    </button>
+    <button type="button" class="filter-chip" [ngClass]="{ active: filter === 'failed' }" (click)="setFilter('failed')">
+      <i class="fas fa-times-circle"></i> Échoués
+    </button>
   </div>
 
-  <!-- Liste des paiements -->
-  <div *ngIf="!isLoading && !errorMessage" class="history-list">
-    <!-- Message liste vide -->
+  <div *ngIf="!isLoading && !errorMessage">
     <div *ngIf="filteredPayments.length === 0" class="empty-state">
-      <span class="empty-icon">📭</span>
-      <p>Aucune cotisation à afficher</p>
+      <i class="fas fa-inbox"></i>
+      <p>Aucune cotisation à afficher pour ce filtre.</p>
     </div>
 
-    <!-- Cartes des paiements -->
-    <div *ngFor="let payment of filteredPayments" class="history-card" 
-         [class.pending]="payment.valide === false" 
-         [class.failed]="payment.valide === null">
-      
-      <!-- Ligne 1 : Titre et statut -->
-      <div class="card-header">
-        <div class="card-icon">
-          <span *ngIf="payment.valide === true">✅</span>
-          <span *ngIf="payment.valide === null">❌</span>
-          <span *ngIf="payment.valide === false"></span>
-        </div>
-        <div class="card-title">
-          <strong>{{ payment.titreCotisation }}</strong>
-          <span class="card-method">{{ getMethodLabel(payment.modePaiement) }}</span>
-        </div>
-        <div class="card-status">
-          <span class="status-badge" [class]="getStatusClass(payment)">
+    <div class="tontine-cards">
+      <div *ngFor="let payment of filteredPayments" class="history-card" [ngClass]="getStatusClass(payment)">
+        <div class="history-card-header">
+          <div class="history-card-title">
+            <div class="title-icon">
+              <i *ngIf="payment.valide === true" class="fas fa-check-circle success"></i>
+              <i *ngIf="payment.valide === false" class="fas fa-clock pending"></i>
+              <i *ngIf="payment.valide === null" class="fas fa-times-circle failed"></i>
+            </div>
+            <div>
+              <strong>{{ payment.titreCotisation }}</strong>
+              <span>{{ getMethodLabel(payment.modePaiement) }}</span>
+            </div>
+          </div>
+          <span class="status-badge" [ngClass]="getStatusClass(payment)">
+            <i class="fas fa-circle status-dot"></i>
             {{ getStatusLabel(payment) }}
           </span>
         </div>
-      </div>
-      
-      <!-- Ligne 2 : Montant -->
-      <div class="card-amount">
-        <strong>{{ payment.montant | number }} FCFA</strong>
-      </div>
-      
-      <!-- Ligne 3 : Date et référence -->
-      <div class="card-footer">
-        <span>📅 {{ payment.datePaiement | date:'dd/MM/yyyy à HH:mm' }}</span>
-        <small>🔖 {{ payment.reference }}</small>
+
+        <div class="history-card-body">
+          <div class="detail-row amount-row">
+            <span class="detail-label">Montant</span>
+            <strong>{{ payment.montant | number }} FCFA</strong>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Date</span>
+            <span>{{ payment.datePaiement | date:'dd/MM/yyyy à HH:mm' }}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Référence</span>
+            <span>{{ payment.reference }}</span>
+          </div>
+        </div>
       </div>
     </div>
   </div>

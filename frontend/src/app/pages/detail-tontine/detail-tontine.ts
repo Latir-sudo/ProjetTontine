@@ -179,7 +179,7 @@ export class DetailTontine implements OnInit {
     
     try {
       console.log('Approbation de la demande:', demande);
-      await this.apiService.patch(`/tontine/${this.tontine.id}/adhesion?userId=${demande.idUser}`, {
+      await this.apiService.patch(`/tontine/${this.tontine.id}/adhesion?idUser=${demande.idUser}`, {
         statut: 'ACCEPTEE'
       });
       alert(`✅ ${demande.prenomUser} ${demande.nomUser} est maintenant membre de la tontine !`);
@@ -203,7 +203,7 @@ export class DetailTontine implements OnInit {
     }
     
     try {
-      await this.apiService.patch(`/tontine/${this.tontine.id}/adhesion?userId=${demande.idUser}`, {
+      await this.apiService.patch(`/tontine/${this.tontine.id}/adhesion?idUser=${demande.idUser}`, {
         statut: 'REJETEE'
       });
       alert(`❌ Demande de ${demande.prenomUser} ${demande.nomUser} rejetée.`);

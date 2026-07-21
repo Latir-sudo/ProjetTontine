@@ -85,14 +85,14 @@ export class Historiques implements OnInit {
 
   getStatusLabel(payment: PaiementHistorique): string {
     if (payment.valide === true) return 'Réussi';
-    if (payment.valide === false) return 'Attente';
-    return 'false';
+    if (payment.valide === false) return 'En attente';
+    return 'Échoué';
   }
 
   getStatusClass(payment: PaiementHistorique): string {
     if (payment.valide === true) return 'success';
-    if (payment.valide === false) return 'failed';
-    return 'pending';
+    if (payment.valide === false) return 'pending';
+    return 'failed';
   }
 
   getMethodLabel(method: string): string {

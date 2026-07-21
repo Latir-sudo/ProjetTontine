@@ -204,8 +204,16 @@ export class Dashboard implements OnInit, OnDestroy {
     try {
       this.isLoading = true;
       
-      const adhesionRequest = { idTontine: tontineId };
-      await this.apiService.post('/tontine/adhesion', adhesionRequest);
+      if (!this.currentUser?.id) {
+        alert('❌ Vous devez être connecté pour adhérer à une tontine');
+        return;
+      }
+
+      const adhesionRequest = {
+        idUser: this.currentUser.id,
+        dateAdhesion: new Date().toISOString().split('T')[0]
+      };
+      await this.apiService.post(`/tontine/${tontineId}/adhesion`, adhesionRequest);
       
       alert('✅ Demande d\'adhésion envoyée avec succès !');
       

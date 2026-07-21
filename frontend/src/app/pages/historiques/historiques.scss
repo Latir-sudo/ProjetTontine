@@ -1,244 +1,353 @@
-// pages/historiques/historiques.scss
-
 .page-shell {
-  min-height: 100vh;
+  padding: 2rem 1.5rem;
   background: #f5f7fa;
-  padding: 1rem;
+  min-height: 100vh;
 }
 
-.history-shell {
-  max-width: 600px;
-  margin: 0 auto;
-}
-
-// En-tête
-.page-header {
-  margin-bottom: 1.5rem;
+.list-header {
+  max-width: 1200px;
+  margin: 0 auto 1.75rem;
+  padding: 1.75rem;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e6e9f2;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.05);
 }
 
 .back-link {
-  background: none;
-  border: none;
-  color: #2e3192;
-  font-size: 0.9rem;
-  cursor: pointer;
-  margin-bottom: 1rem;
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.5rem;
+  color: #003366;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  text-decoration: none;
+}
+
+.back-link:hover {
+  color: #0052cc;
 }
 
 .brand-pill {
-  display: inline-block;
-  background: linear-gradient(135deg, #2e3192, #1bffff);
-  padding: 0.3rem 1rem;
-  border-radius: 20px;
-  font-size: 0.75rem;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #003366;
   color: white;
-  margin-bottom: 0.8rem;
-}
-
-.page-header h1 {
-  font-size: 1.5rem;
-  margin: 0.3rem 0;
-  color: #1a2c3e;
-}
-
-.page-header p {
-  color: #6c7a8a;
-  font-size: 0.85rem;
-  margin: 0;
-}
-
-// Filtres
-.history-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  background: white;
-  padding: 0.3rem;
-  border-radius: 40px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.history-tabs button {
-  flex: 1;
-  padding: 0.5rem;
-  border: none;
-  background: transparent;
-  border-radius: 30px;
+  padding: 0.4rem 0.9rem;
+  border-radius: 999px;
   font-size: 0.8rem;
-  font-weight: 500;
-  color: #6c7a8a;
-  cursor: pointer;
-  transition: all 0.2s;
+  letter-spacing: 0.02em;
+  margin-bottom: 1rem;
 }
 
-.history-tabs button.active {
-  background: linear-gradient(135deg, #2e3192, #1bffff);
-  color: white;
+.list-header h1 {
+  margin: 0;
+  font-size: clamp(2rem, 2.5vw, 2.5rem);
+  color: #003366;
+  margin-bottom: 0.75rem;
 }
 
-// Liste des cartes
-.history-list {
+.list-header p {
+  margin: 0;
+  color: #58606b;
+  max-width: 680px;
+  line-height: 1.65;
+}
+
+.history-summary {
+  max-width: 1200px;
+  margin: 0 auto 1.75rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: white;
+  border-radius: 20px;
+  border: 1px solid #e6e9f2;
+  padding: 1.35rem 1.4rem;
   display: flex;
   flex-direction: column;
-  gap: 0.8rem;
+  gap: 0.35rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
 }
 
-// Carte d'un paiement
-.history-card {
-  background: white;
-  border-radius: 12px;
+.stat-card span {
+  color: #7b8a9e;
+  font-size: 0.95rem;
+}
+
+.stat-card strong {
+  font-size: 1.45rem;
+  color: #003366;
+}
+
+.filter-bar {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
   padding: 1rem;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-  border-left: 4px solid #2ecc71;
-}
-
-.history-card.pending {
-  border-left-color: #f39c12;
-}
-
-.history-card.failed {
-  border-left-color: #e74c3c;
-}
-
-// En-tête de la carte
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 0.8rem;
-  margin-bottom: 0.8rem;
-}
-
-.card-icon {
-  font-size: 1.2rem;
-}
-
-.card-title {
-  flex: 1;
-}
-
-.card-title strong {
-  display: block;
-  font-size: 0.9rem;
-  color: #1a2c3e;
-}
-
-.card-method {
-  font-size: 0.7rem;
-  color: #8a9bae;
-}
-
-.card-status {
-  flex-shrink: 0;
-}
-
-.status-badge {
-  font-size: 0.7rem;
-  padding: 0.2rem 0.6rem;
-  border-radius: 20px;
-  font-weight: 500;
-}
-
-.status-badge.success {
-  background: #e8f8ef;
-  color: #2ecc71;
-}
-
-.status-badge.pending {
-  background: #fff3e0;
-  color: #f39c12;
-}
-
-.status-badge.failed {
-  background: #fdecea;
-  color: #e74c3c;
-}
-
-// Montant
-.card-amount {
-  margin-bottom: 0.8rem;
-}
-
-.card-amount strong {
-  font-size: 1.1rem;
-  color: #1a2c3e;
-}
-
-// Pied de carte
-.card-footer {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.7rem;
-  color: #8a9bae;
-  padding-top: 0.5rem;
-  border-top: 1px solid #eef2f5;
-}
-
-.card-footer small {
-  font-family: monospace;
-}
-
-// États
-.loading-state, .error-state, .empty-state {
-  text-align: center;
-  padding: 2rem;
   background: white;
-  border-radius: 16px;
-  margin: 1rem 0;
+  border-radius: 20px;
+  border: 1px solid #e6e9f2;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.04);
+}
+
+.filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8rem 1.1rem;
+  background: #f6f8fb;
+  color: #3f4f67;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+  background: #ebf2fb;
+}
+
+.filter-chip.active {
+  background: #003366;
+  color: white;
+  border-color: #003366;
+}
+
+.loading-spinner,
+.error-panel,
+.empty-state {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  border-radius: 24px;
+  border: 1px solid #e6e9f2;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.05);
+  padding: 3rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  display: grid;
+  place-items: center;
+  gap: 1rem;
 }
 
 .spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #e0e4e8;
-  border-top-color: #2e3192;
+  width: 58px;
+  height: 58px;
+  border: 6px solid #e6e9f2;
+  border-top: 6px solid #003366;
   border-radius: 50%;
-  margin: 0 auto 1rem;
-  animation: spin 0.8s linear infinite;
+  animation: spin 1s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
-.error-icon, .empty-icon {
-  font-size: 2.5rem;
-  display: block;
-  margin-bottom: 0.8rem;
+.error-panel p,
+.empty-state p {
+  color: #5c6b7c;
+  font-size: 1rem;
+  margin: 0.75rem 0 0;
 }
 
-.retry-btn {
-  margin-top: 0.8rem;
-  padding: 0.4rem 1.2rem;
-  background: #2e3192;
-  color: white;
+.error-icon {
+  color: #d7413f;
+  font-size: 2.25rem;
+}
+
+.primary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.15rem;
+  padding: 0.95rem 1.35rem;
+  border-radius: 16px;
   border: none;
-  border-radius: 30px;
+  background: #003366;
+  color: white;
+  font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
-// Responsive
-@media (max-width: 500px) {
-  .page-shell {
-    padding: 0.8rem;
-  }
-  
-  .card-footer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.3rem;
-  }
-  
-  .card-header {
-    flex-wrap: wrap;
-  }
-  
-  .card-status {
-    width: 100%;
-    text-align: right;
-  }
+.primary-button:hover {
+  background: #00264f;
+  transform: translateY(-1px);
+}
+
+.tontine-cards {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 1rem;
+}
+
+.history-card {
+  background: white;
+  border: 1px solid #e6e9f2;
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.05);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.history-card:hover {
+  transform: translateY(-2px);
+  border-color: #cfd6e3;
+}
+
+.history-card.success {
+  border-left: 6px solid #1f9a5a;
+}
+
+.history-card.pending {
+  border-left: 6px solid #ff8f4c;
+}
+
+.history-card.failed {
+  border-left: 6px solid #de3e45;
+}
+
+.history-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.history-card-title {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.title-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 16px;
+  display: grid;
+  place-items: center;
+  background: #f2f5fb;
+}
+
+.title-icon i {
+  font-size: 1.1rem;
+}
+
+.title-icon .success {
+  color: #1f9a5a;
+}
+
+.title-icon .pending {
+  color: #ff8f4c;
+}
+
+.title-icon .failed {
+  color: #de3e45;
+}
+
+.history-card-title strong {
+  display: block;
+  font-size: 1.05rem;
+  color: #1b2638;
+}
+
+.history-card-title span {
+  display: block;
+  color: #6f7a8a;
+  font-size: 0.95rem;
+  margin-top: 0.3rem;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.75rem 1rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-badge.success {
+  background: #edf7ee;
+  color: #1f9a5a;
+}
+
+.status-badge.success .status-dot {
+  background: #1f9a5a;
+}
+
+.status-badge.pending {
+  background: #fff3e4;
+  color: #c76a1d;
+}
+
+.status-badge.pending .status-dot {
+  background: #ff8f4c;
+}
+
+.status-badge.failed {
+  background: #ffe6e8;
+  color: #de3e45;
+}
+
+.status-badge.failed .status-dot {
+  background: #de3e45;
+}
+
+.history-card-body {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1rem;
+}
+
+.detail-row {
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 1rem;
+  align-items: center;
+  color: #4f5f75;
+  font-size: 0.95rem;
+}
+
+.detail-row .detail-label {
+  font-weight: 700;
+  color: #2d3b54;
+}
+
+.amount-row strong {
+  color: #ff7f50;
+  font-size: 1.2rem;
+}
+
+.empty-state i {
+  font-size: 3rem;
+  color: #cbd2df;
+}
+
+.empty-state p {
+  margin-top: 1rem;
+  color: #6f7a8a;
 }

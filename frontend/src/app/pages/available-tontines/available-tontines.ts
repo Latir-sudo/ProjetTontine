@@ -185,7 +185,18 @@ export class AvailableTontines implements OnInit {
 
   async postulerAdhesion(tontineId: number) {
     try {
-      await this.apiService.post('/tontine/adhesion', { idTontine: tontineId });
+      const currentUser = this.authService.currentUser();
+      if (!currentUser?.id) {
+        alert('❌ Vous devez être connecté pour adhérer à une tontine');
+        return;
+      }
+
+      const adhesionRequest = {
+        idUser: currentUser.id,
+        dateAdhesion: new Date().toISOString().split('T')[0]
+      };
+
+      await this.apiService.post(`/tontine/${tontineId}/adhesion`, adhesionRequest);
       alert('✅ Demande d\'adhésion envoyée avec succès !');
       await this.loadData(); // Recharger pour mettre à jour la liste
     } catch (error) {
