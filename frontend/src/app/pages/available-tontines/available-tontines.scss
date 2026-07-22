@@ -162,6 +162,32 @@
   border-color: #0052cc;
 }
 
+.feedback-box {
+  max-width: 1200px;
+  margin: 0 auto 1.5rem;
+  padding: 1rem 1.25rem;
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.feedback-success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #a5d6a7;
+}
+
+.feedback-info {
+  background: #e3f2fd;
+  color: #1565c0;
+  border: 1px solid #90caf9;
+}
+
+.feedback-error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef9a9a;
+}
+
 .tontines-grid {
   max-width: 1200px;
   margin: 0 auto;

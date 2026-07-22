@@ -51,7 +51,7 @@ public class SpringSecurityConfig {
                         ).permitAll()
                         // Route POST /api/users (inscription) publique
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
-                        .requestMatchers(HttpMethod.GET,"api/tontine").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/tontine").permitAll()
                         // Toutes les autres routes nécessitent authentification
                         .anyRequest().authenticated()
                 )

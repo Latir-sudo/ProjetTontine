@@ -51,6 +51,8 @@ export class DetailTontine implements OnInit {
   demandes: DemandeAdhesion[] = [];
   showDemandesModal = false;
   imageError = false;
+  feedbackMessage = '';
+  feedbackType: 'success' | 'info' | 'error' = 'info';
 
   constructor(
     private apiService: ApiService,
@@ -114,7 +116,17 @@ export class DetailTontine implements OnInit {
       const currentUser = await this.authService.currentUser();
       
       if (!currentUser || !currentUser.id) {
-        alert('❌ Vous devez être connecté pour adhérer à une tontine');
+        this.feedbackMessage = '❌ Vous devez être connecté pour adhérer à une tontine';
+        this.feedbackType = 'error';
+        return;
+      }
+
+      const existingRequests = await this.apiService.get<any[]>(`/tontine/${this.tontine.id}/adhesion`);
+      const alreadyRequested = existingRequests?.some((request: any) => request.idUser === currentUser.id);
+
+      if (alreadyRequested) {
+        this.feedbackMessage = 'ℹ️ Une demande d’adhésion a déjà été envoyée pour cette tontine.';
+        this.feedbackType = 'info';
         return;
       }
       
@@ -125,12 +137,14 @@ export class DetailTontine implements OnInit {
       
       console.log('Envoi de la demande:', adhesionRequest);
       await this.apiService.post(`/tontine/${this.tontine.id}/adhesion`, adhesionRequest);
-      alert('✅ Demande d\'adhésion envoyée avec succès !');
+      this.feedbackMessage = '✅ Demande d’adhésion envoyée avec succès !';
+      this.feedbackType = 'success';
       await this.checkIfJoined();
       this.cdr.detectChanges();
     } catch (error: any) {
       console.error('Erreur adhésion:', error);
-      alert('❌ Erreur lors de la demande d\'adhésion');
+      this.feedbackMessage = '❌ Erreur lors de la demande d’adhésion';
+      this.feedbackType = 'error';
     }
   }
 

@@ -62,6 +62,10 @@
 
  
 
+  <div class="feedback-box" *ngIf="feedbackMessage" [ngClass]="{'feedback-success': feedbackType === 'success', 'feedback-info': feedbackType === 'info', 'feedback-error': feedbackType === 'error'}">
+    {{ feedbackMessage }}
+  </div>
+
   <!-- Grille des tontines -->
   <div class="tontines-grid" *ngIf="!isLoading">
     <div *ngIf="filteredTontines.length === 0" class="no-results">
