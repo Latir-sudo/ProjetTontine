@@ -1,11 +1,9 @@
 package com.tontineApp.tontine_manager.controller;
 
-import com.tontineApp.tontine_manager.dto.PaiementHistoriqueResponse;
-import com.tontineApp.tontine_manager.dto.PaiementRequest;
-import com.tontineApp.tontine_manager.dto.PaiementResponse;
-import com.tontineApp.tontine_manager.dto.PaiementStatsResponse;
+import com.tontineApp.tontine_manager.dto.*;
 import com.tontineApp.tontine_manager.exception.RessourceNotFoundException;
 import com.tontineApp.tontine_manager.service.PaiementService;
+import com.tontineApp.tontine_manager.service.payment.WaveCheckoutService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +20,7 @@ import java.util.Map;
 public class PaiementController {
 
     private final PaiementService paiementService;
+    private final WaveCheckoutService waveCheckoutService;
 
     /**
      * Récupère l'historique des paiements d'un membre
@@ -88,6 +87,21 @@ public class PaiementController {
             Authentication authentication) {
         PaiementResponse response = paiementService.createPaiement(paiementRequest, cotisationId);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/mobile/wave")
+    @PreAuthorize("isAuthenticated() and @cotisationSecurity.isOwner(#authentication, #request.cotisationId)")
+    public ResponseEntity<MobilePaymentResponse> createWaveCheckout(
+            @jakarta.validation.Valid @RequestBody MobilePaymentRequest request,
+            Authentication authentication) {
+        return ResponseEntity.ok(waveCheckoutService.createCheckout(request.getCotisationId(), request.getPhoneNumber()));
+    }
+
+    @GetMapping("/mobile/wave/{checkoutId}")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<MobilePaymentResponse> getWaveCheckoutStatus(@PathVariable String checkoutId,
+                                                                         Authentication authentication) {
+        return ResponseEntity.ok(waveCheckoutService.getCheckoutStatus(checkoutId, authentication.getName()));
     }
 
     /**

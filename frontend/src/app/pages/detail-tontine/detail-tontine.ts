@@ -205,7 +205,9 @@ export class DetailTontine implements OnInit {
       this.cdr.detectChanges();
     } catch (error: any) {
       console.error('Erreur approbation:', error);
-      alert('❌ Erreur lors de l\'approbation');
+      const message = error?.error?.message || error?.message || 'Erreur lors de l\'approbation';
+      this.feedbackMessage = `❌ ${message}`;
+      this.feedbackType = 'error';
     }
   }
 
@@ -228,7 +230,9 @@ export class DetailTontine implements OnInit {
       this.cdr.detectChanges();
     } catch (error: any) {
       console.error('Erreur rejet:', error);
-      alert('❌ Erreur lors du rejet');
+      const message = error?.error?.message || error?.message || 'Erreur lors du rejet';
+      this.feedbackMessage = `❌ ${message}`;
+      this.feedbackType = 'error';
     }
   }
 

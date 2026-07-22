@@ -13,6 +13,7 @@ import { MesTontines } from './pages/mes-tontines/mes-tontines';
 import { Administration } from './pages/administration/administration';
 import { AddMemberComponent } from './pages/mes-tontines/add-member/add-member.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
+import { Profile } from './pages/profile/profile';
 export const routes: Routes = [
   
   { path: 'accueil', component: Accueil },
@@ -31,6 +32,7 @@ export const routes: Routes = [
   { path: 'paiement/:id', component: Paiement, canActivate: [AuthGuard] },
   { path: 'tontine/:id', component: DetailTontine, canActivate: [AuthGuard] },
   { path: 'mes-tontines', component: MesTontines, canActivate: [AuthGuard] },
+  { path: 'profil', component: Profile, canActivate: [AuthGuard] },
   { path: 'admin/:id', component: Administration, canActivate: [AuthGuard] }, // Route pour la gestion admin d'une tontine spécifique
   
   // Redirections

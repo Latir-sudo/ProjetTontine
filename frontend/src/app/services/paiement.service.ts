@@ -2,7 +2,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { PaiementHistorique, PaiementStats } from '../models/paiement.model';
+import { PaiementHistorique, PaiementStats, WaveCheckoutResponse } from '../models/paiement.model';
 
 @Injectable({
   providedIn: 'root'
@@ -18,5 +18,9 @@ export class PaiementService {
 
   getStatsByMembre(membreId: number): Observable<PaiementStats> {
     return this.http.get<PaiementStats>(`${this.apiUrl}/membre/${membreId}/stats`);
+  }
+
+  createWaveCheckout(cotisationId: number, phoneNumber?: string): Observable<WaveCheckoutResponse> {
+    return this.http.post<WaveCheckoutResponse>(`${this.apiUrl}/mobile/wave`, { cotisationId, phoneNumber });
   }
 }

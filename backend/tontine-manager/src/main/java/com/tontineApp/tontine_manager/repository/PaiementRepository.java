@@ -185,6 +185,8 @@ public interface PaiementRepository extends JpaRepository<Paiement, Integer> {
      */
     boolean existsByReference(String reference);
 
+    java.util.Optional<Paiement> findByProviderCheckoutId(String providerCheckoutId);
+
     /**
      * Vérifie si une cotisation a des paiements validés
      */

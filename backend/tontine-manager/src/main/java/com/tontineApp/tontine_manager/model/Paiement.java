@@ -25,6 +25,12 @@ public class Paiement {
     private ModePaiement modePaiement;
     private String reference;
     private Boolean valide;
+    @Column(name = "provider_checkout_id", unique = true)
+    private String providerCheckoutId;
+    @Column(name = "provider_transaction_id")
+    private String providerTransactionId;
+    @Column(name = "provider_status")
+    private String providerStatus;
 
     @ManyToOne
     @JoinColumn(name="cotisation_id")

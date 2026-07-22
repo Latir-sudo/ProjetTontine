@@ -1,0 +1,66 @@
+<div class="max-w-3xl mx-auto p-6">
+  <div class="bg-white rounded-lg shadow p-6">
+    <div class="flex items-center gap-6 mb-6">
+      <div class="w-24 h-24 rounded-full bg-gray-100 overflow-hidden flex items-center justify-center">
+        <img *ngIf="avatarPreview; else placeholder" [src]="avatarPreview" alt="avatar" class="w-full h-full object-cover" />
+        <ng-template #placeholder>
+          <span class="text-3xl text-[#FF7F50]">{{ (user?.prenom || user?.nom)?.charAt(0) || 'U' }}</span>
+        </ng-template>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold">Mon profil</h1>
+        <div class="text-sm text-gray-500">Membre depuis : {{ user?.dateInscription || '—' }}</div>
+      </div>
+    </div>
+
+    <div *ngIf="editingUser; else notLogged">
+      <form (ngSubmit)="save()" class="space-y-4">
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-gray-600">Prénom</label>
+            <input [(ngModel)]="editingUser.prenom" name="prenom" class="w-full px-3 py-2 rounded border" />
+            <div class="text-xs text-red-600" *ngIf="errors.prenom">{{ errors.prenom }}</div>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Nom</label>
+            <input [(ngModel)]="editingUser.nom" name="nom" class="w-full px-3 py-2 rounded border" />
+            <div class="text-xs text-red-600" *ngIf="errors.nom">{{ errors.nom }}</div>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Email</label>
+          <input [(ngModel)]="editingUser.email" name="email" type="email" class="w-full px-3 py-2 rounded border" />
+          <div class="text-xs text-red-600" *ngIf="errors.email">{{ errors.email }}</div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-sm text-gray-600">Téléphone</label>
+            <input [(ngModel)]="editingUser.telephone" name="telephone" class="w-full px-3 py-2 rounded border" />
+            <div class="text-xs text-red-600" *ngIf="errors.telephone">{{ errors.telephone }}</div>
+          </div>
+          <div>
+            <label class="block text-sm text-gray-600">Ville</label>
+            <input [(ngModel)]="editingUser.ville" name="ville" class="w-full px-3 py-2 rounded border" />
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm text-gray-600">Changer avatar (aperçu local)</label>
+          <input type="file" accept="image/*" (change)="handleFileChange($event)" />
+        </div>
+
+        <div class="flex items-center gap-3">
+          <button type="submit" [disabled]="saving" class="px-4 py-2 bg-[#FF7F50] text-white rounded">{{ saving ? 'Enregistrement...' : 'Enregistrer' }}</button>
+          <button type="button" (click)="cancel()" class="px-4 py-2 border rounded">Annuler</button>
+          <span class="text-sm text-green-600" *ngIf="message">{{ message }}</span>
+        </div>
+      </form>
+    </div>
+
+    <ng-template #notLogged>
+      <div class="text-center py-6 text-gray-600">Vous devez être connecté pour accéder à votre profil.</div>
+    </ng-template>
+  </div>
+</div>

@@ -27,3 +27,14 @@ export interface PaiementStats {
   paiementsEchoues: number;
   tauxCompletude: number;
 }
+
+export interface WaveCheckoutResponse {
+  success: boolean;
+  transactionId: string;
+  provider: 'WAVE';
+  message: string;
+  amount: number;
+  reference: string;
+  status: 'PENDING' | 'SUCCESS';
+  launchUrl: string | null;
+}

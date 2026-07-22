@@ -47,7 +47,8 @@ public class SpringSecurityConfig {
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
                                 "/v3/api-docs/**",
-                                "/v3/api-docs.yaml"
+                                "/v3/api-docs.yaml",
+                                "/api/webhooks/wave"
                         ).permitAll()
                         // Route POST /api/users (inscription) publique
                         .requestMatchers(HttpMethod.POST, "/api/users").permitAll()
