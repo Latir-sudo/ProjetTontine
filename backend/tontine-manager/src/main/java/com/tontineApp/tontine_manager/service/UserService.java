@@ -89,6 +89,10 @@ public class UserService {
             user.setEmail(newuser.getEmail());
         if(newuser.getTelephone()!=null  && !newuser.getTelephone().isBlank())
             user.setTelephone(newuser.getTelephone());
+        if(newuser.getVille()!=null && !newuser.getVille().isBlank())
+            user.setVille(newuser.getVille());
+        if(newuser.getAvatar()!=null && !newuser.getAvatar().isBlank())
+            user.setAvatar(newuser.getAvatar());
 
         return userMapping.mapToUserResponse(userRepository.save(user));
 

@@ -1,2 +1,45 @@
 @use "tailwindcss";
 
+:root {
+  --color-primary: #0052cc;
+  --color-primary-dark: #003d82;
+  --color-navy: #003366;
+  --color-accent: #ff8f4c;
+  --color-accent-dark: #ff7d3d;
+  --color-text: #1a1a1a;
+  --color-text-muted: rgba(26, 26, 26, 0.72);
+  --color-border: #e0e0e0;
+  --color-border-subtle: #e6e9f2;
+  --color-bg: #ffffff;
+  --color-bg-subtle: #f8fafb;
+  --color-success: #1f9a5a;
+  --color-error: #de3e45;
+  --radius-sm: 0.5rem;
+  --radius-md: 1rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
+  --shadow-sm: 0 4px 12px rgba(0, 82, 204, 0.08);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.12);
+  --transition: 0.2s ease;
+}
+
+.error-message {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: rgba(222, 62, 69, 0.08);
+  color: var(--color-error);
+  border: 1px solid rgba(222, 62, 69, 0.2);
+}
+
+.success-message {
+  padding: 0.85rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: rgba(31, 154, 90, 0.08);
+  color: var(--color-success);
+  border: 1px solid rgba(31, 154, 90, 0.2);
+}

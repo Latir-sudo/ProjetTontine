@@ -1,80 +1,112 @@
 <footer class="bg-[#003366] text-white mt-auto">
-  <!-- Principal -->
-  <div class="container mx-auto px-4 py-8 md:py-12">
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
-      
+  <div class="h-1 bg-gradient-to-r from-[#0052cc] via-[#FF7F50] to-[#0052cc]"></div>
+  <div class="container mx-auto px-6 py-10 md:py-14">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-10">
+
       <!-- Logo & description -->
       <div class="col-span-1 md:col-span-1">
         <div class="flex items-center gap-2 mb-4">
-          <i class="ri-hand-coin-line text-2xl text-[#FF7F50]"></i>
-          <span class="text-xl font-bold">Tontine Manager</span>
+          <div class="w-9 h-9 rounded-xl bg-[#FF7F50]/20 flex items-center justify-center">
+            <i class="ri-hand-coin-line text-xl text-[#FF7F50]"></i>
+          </div>
+          <span class="text-lg font-bold">Tontine Manager</span>
         </div>
-        <p class="text-gray-300 text-sm leading-relaxed">
+        <p class="text-gray-300 text-sm leading-relaxed mb-4">
           Gérez vos tontines en toute simplicité. Paiements sécurisés, suivi en temps réel et gestion transparente.
         </p>
+        <div class="flex items-center gap-1.5 text-xs text-[#FF7F50] font-semibold bg-[#FF7F50]/10 px-3 py-1.5 rounded-full w-fit">
+          <i class="ri-shield-check-line"></i>
+          Plateforme sécurisée
+        </div>
       </div>
-      
+
       <!-- Liens rapides -->
       <div>
-        <h3 class="font-semibold mb-4 text-[#FF7F50]">Liens rapides</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a routerLink="/accueil" class="text-gray-300 hover:text-white transition">Accueil</a></li>
-          <li><a routerLink="/tontine/create" class="text-gray-300 hover:text-white transition">Créer une tontine</a></li>
-          <li><a routerLink="/historique" class="text-gray-300 hover:text-white transition">Mon historique</a></li>
-          <li><a routerLink="/tontine-availables" class="text-gray-300 hover:text-white transition">Tontines disponibles</a></li>
+        <h3 class="font-semibold mb-5 text-[#FF7F50] text-sm uppercase tracking-wider">Liens rapides</h3>
+        <ul class="space-y-2.5 text-sm">
+          <li>
+            <a routerLink="/accueil" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2">
+              <i class="ri-home-4-line text-[#FF7F50]/70 text-xs"></i> Accueil
+            </a>
+          </li>
+          <li>
+            <a routerLink="/tontine/create" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2">
+              <i class="ri-add-circle-line text-[#FF7F50]/70 text-xs"></i> Créer une tontine
+            </a>
+          </li>
+          <li>
+            <a routerLink="/historique" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2">
+              <i class="ri-history-line text-[#FF7F50]/70 text-xs"></i> Mon historique
+            </a>
+          </li>
+          <li>
+            <a routerLink="/tontine-availables" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2">
+              <i class="ri-search-line text-[#FF7F50]/70 text-xs"></i> Tontines disponibles
+            </a>
+          </li>
+          <li>
+            <a routerLink="/profil" class="text-gray-300 hover:text-white transition-colors duration-200 flex items-center gap-2">
+              <i class="ri-user-3-line text-[#FF7F50]/70 text-xs"></i> Mon profil
+            </a>
+          </li>
         </ul>
       </div>
-      
+
       <!-- Support -->
       <div>
-        <h3 class="font-semibold mb-4 text-[#FF7F50]">Support</h3>
-        <ul class="space-y-2 text-sm">
-          <li><a href="#" class="text-gray-300 hover:text-white transition">Centre d'aide</a></li>
-          <li><a href="#" class="text-gray-300 hover:text-white transition">FAQ</a></li>
-          <li><a href="#" class="text-gray-300 hover:text-white transition">Contactez-nous</a></li>
-          <li><a href="#" class="text-gray-300 hover:text-white transition">Conditions d'utilisation</a></li>
+        <h3 class="font-semibold mb-5 text-[#FF7F50] text-sm uppercase tracking-wider">Support</h3>
+        <ul class="space-y-2.5 text-sm">
+          <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Centre d'aide</a></li>
+          <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">FAQ</a></li>
+          <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Nous contacter</a></li>
+          <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Conditions d'utilisation</a></li>
+          <li><a href="#" class="text-gray-300 hover:text-white transition-colors duration-200">Politique de confidentialité</a></li>
         </ul>
       </div>
-      
+
       <!-- Contact -->
       <div>
-        <h3 class="font-semibold mb-4 text-[#FF7F50]">Contact</h3>
-        <ul class="space-y-2 text-sm text-gray-300">
-          <li class="flex items-center gap-2">
-            <i class="ri-mail-line"></i>
+        <h3 class="font-semibold mb-5 text-[#FF7F50] text-sm uppercase tracking-wider">Contact</h3>
+        <ul class="space-y-3 text-sm text-gray-300">
+          <li class="flex items-start gap-2.5">
+            <i class="ri-mail-line text-[#FF7F50] mt-0.5 shrink-0"></i>
             <span>contact@tontinemanager.com</span>
           </li>
-          <li class="flex items-center gap-2">
-            <i class="ri-phone-line"></i>
+          <li class="flex items-start gap-2.5">
+            <i class="ri-phone-line text-[#FF7F50] mt-0.5 shrink-0"></i>
             <span>+221 77 123 45 67</span>
           </li>
-          <li class="flex items-center gap-2">
-            <i class="ri-map-pin-line"></i>
+          <li class="flex items-start gap-2.5">
+            <i class="ri-map-pin-2-line text-[#FF7F50] mt-0.5 shrink-0"></i>
             <span>Dakar, Sénégal</span>
           </li>
         </ul>
-        
+
         <!-- Réseaux sociaux -->
-        <div class="flex gap-4 mt-4">
-          <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#FF7F50] transition">
+        <div class="flex gap-3 mt-5">
+          <a href="#" class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#FF7F50] hover:scale-110 transition-all duration-200" title="Facebook">
             <i class="ri-facebook-fill text-sm"></i>
           </a>
-          <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#FF7F50] transition">
+          <a href="#" class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#FF7F50] hover:scale-110 transition-all duration-200" title="Twitter/X">
             <i class="ri-twitter-x-line text-sm"></i>
           </a>
-          <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#FF7F50] transition">
+          <a href="#" class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#FF7F50] hover:scale-110 transition-all duration-200" title="LinkedIn">
             <i class="ri-linkedin-fill text-sm"></i>
           </a>
-          <a href="#" class="w-8 h-8 bg-white/10 rounded-full flex items-center justify-center hover:bg-[#FF7F50] transition">
+          <a href="#" class="w-9 h-9 bg-white/10 rounded-xl flex items-center justify-center hover:bg-[#FF7F50] hover:scale-110 transition-all duration-200" title="WhatsApp">
             <i class="ri-whatsapp-line text-sm"></i>
           </a>
         </div>
       </div>
     </div>
-    
+
     <!-- Copyright -->
-    <div class="border-t border-white/20 mt-8 pt-6 text-center text-gray-400 text-sm">
+    <div class="border-t border-white/10 mt-10 pt-6 flex flex-col sm:flex-row justify-between items-center gap-3 text-gray-400 text-xs">
       <p>&copy; {{ currentYear }} Tontine Manager. Tous droits réservés.</p>
+      <p class="flex items-center gap-1">
+        <i class="ri-map-pin-2-line text-[#FF7F50]"></i>
+        Conçu pour l'Afrique de l'Ouest
+      </p>
     </div>
   </div>
 </footer>

@@ -17,6 +17,7 @@ export interface PaiementHistorique {
   cotisationId: number;
   membreNom: string;
   membrePrenom: string;
+  nomTontine: string;
 }
 
 export interface PaiementStats {

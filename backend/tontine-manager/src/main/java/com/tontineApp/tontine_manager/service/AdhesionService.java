@@ -9,8 +9,10 @@ import com.tontineApp.tontine_manager.exception.RessourceNotFoundException;
 import com.tontineApp.tontine_manager.exception.UnAuthorizedException;
 import com.tontineApp.tontine_manager.mapper.AdhesionMapper;
 import com.tontineApp.tontine_manager.model.Adhesion;
+import com.tontineApp.tontine_manager.model.Membre;
 import com.tontineApp.tontine_manager.model.Tontine;
 import com.tontineApp.tontine_manager.repository.AdhesionRepository;
+import com.tontineApp.tontine_manager.repository.MembreRepository;
 import com.tontineApp.tontine_manager.repository.TontineRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -19,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import static com.tontineApp.tontine_manager.enumeration.StatutAdhesion.ACCEPTEE;
 
@@ -31,6 +34,8 @@ public class AdhesionService {
     private final TontineRepository tontineRepository;
     private final AdhesionMapper adhesionMapper;
     private final MembreService membreService;
+    private final MembreRepository membreRepository;
+    private final NotificationService notificationService;
 
     public List<AdhesionResponse> getAdhesionAttente(Integer idTontine) {
         log.info("Recuperation des adhesions en attente pour la tontine {}", idTontine);
@@ -56,9 +61,10 @@ public class AdhesionService {
         StatutAdhesion nouveauStatut = StatutAdhesion.from(nouveau.getStatut());
         log.info("Traitement de l'adhesion pour user={}, tontine={}, nouveau statut={}", idUser, idTontine, nouveauStatut);
 
-        Adhesion adhesion = adhesionRepository.findByUser_IdAndTontine_Id(idUser, idTontine)
+        Adhesion adhesion = adhesionRepository
+                .findByUser_IdAndTontine_IdAndStatut(idUser, idTontine, StatutAdhesion.ATTENTE)
                 .orElseThrow(() -> new RessourceNotFoundException(
-                        String.format("Adhesion non trouvee pour l'utilisateur %d dans la tontine %d", idUser, idTontine)
+                        String.format("Adhesion en attente non trouvee pour l'utilisateur %d dans la tontine %d", idUser, idTontine)
                 ));
 
         if (ACCEPTEE.equals(nouveauStatut) && adhesionRepository.existsByUser_IdAndTontine_IdAndStatut(idUser, idTontine, ACCEPTEE)) {
@@ -75,6 +81,14 @@ public class AdhesionService {
             membreRequest.setIdTontine(idTontine);
             membreRequest.setIdUser(idUser);
             membreService.ajouterUtilisateurATontine(membreRequest);
+
+            // Notifier le nouveau membre : sa demande a été acceptée
+            envoyerNotificationAcceptation(idUser, idTontine, adhesion.getTontine());
+        }
+
+        if (StatutAdhesion.REJETEE.equals(nouveauStatut)) {
+            // Le demandeur n'est pas encore membre → log seulement (pas de Membre record)
+            log.info("Demande rejetee pour user={}, tontine={}", idUser, idTontine);
         }
 
         Adhesion saved = adhesionRepository.save(adhesion);
@@ -98,6 +112,9 @@ public class AdhesionService {
         Adhesion saved = adhesionRepository.save(adhesion);
         log.info("Demande d'adhesion creee avec succes, id={}", saved.getId());
 
+        // Notifier l'admin de la tontine qu'une nouvelle demande est arrivée
+        envoyerNotificationAdmin(tontine, adhesion);
+
         return adhesionMapper.toAdhesionResponse(saved);
     }
 
@@ -120,5 +137,59 @@ public class AdhesionService {
         log.info("Demande d'adhesion creee avec succes, id={}", saved.getId());
 
         return adhesionMapper.toAdhesionResponse(saved);
+    }
+
+    // ==================== MÉTHODES PRIVÉES NOTIFICATIONS ====================
+
+    /**
+     * Notifie l'admin de la tontine qu'une nouvelle demande d'adhésion a été soumise.
+     * L'admin est forcément membre (il a créé la tontine).
+     */
+    private void envoyerNotificationAdmin(Tontine tontine, Adhesion adhesion) {
+        if (tontine.getAdmin() == null) return;
+
+        Optional<Membre> membreAdmin = membreRepository
+                .findByTontine_IdAndUser_Id(tontine.getId(), tontine.getAdmin().getId());
+
+        if (membreAdmin.isEmpty()) {
+            log.warn("Admin de la tontine {} introuvable dans la table membre — notification non envoyée", tontine.getId());
+            return;
+        }
+
+        String prenomDemandeur = adhesion.getUser() != null ? adhesion.getUser().getPrenom() : "Un utilisateur";
+        String nomDemandeur    = adhesion.getUser() != null ? adhesion.getUser().getNom()    : "";
+
+        notificationService.creerNotificationDirecte(
+                membreAdmin.get(),
+                "Nouvelle demande d'adhésion",
+                prenomDemandeur + " " + nomDemandeur + " souhaite rejoindre la tontine « " + tontine.getNomTontine() + " ».",
+                "ADHESION",
+                "#0052cc",
+                "/tontine/" + tontine.getId() + "?showDemandes=true"
+        );
+    }
+
+    /**
+     * Notifie le nouveau membre que sa demande d'adhésion a été acceptée.
+     * Appelé après que membreService.ajouterUtilisateurATontine() a créé le Membre.
+     */
+    private void envoyerNotificationAcceptation(Integer idUser, Integer idTontine, Tontine tontine) {
+        Optional<Membre> membreOpt = membreRepository.findByTontine_IdAndUser_Id(idTontine, idUser);
+
+        if (membreOpt.isEmpty()) {
+            log.warn("Membre introuvable après acceptation (user={}, tontine={}) — notification non envoyée", idUser, idTontine);
+            return;
+        }
+
+        String nomTontine = tontine != null ? tontine.getNomTontine() : "la tontine";
+
+        notificationService.creerNotificationDirecte(
+                membreOpt.get(),
+                "Demande d'adhésion acceptée",
+                "Félicitations ! Votre demande pour rejoindre « " + nomTontine + " » a été approuvée.",
+                "ADHESION",
+                "#1f9a5a",
+                "/tontine/" + idTontine
+        );
     }
 }

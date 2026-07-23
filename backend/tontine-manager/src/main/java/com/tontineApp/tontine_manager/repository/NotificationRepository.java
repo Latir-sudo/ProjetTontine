@@ -12,5 +12,8 @@ public interface NotificationRepository extends JpaRepository<Notification,Integ
 
     List<Notification> findByMembre_Id(Integer id);
     void deleteByMembre_Id(Integer id);
-    List<Notification> findByMembre_IdAndEstLu(Integer id,Boolean estLue);
+    List<Notification> findByMembre_IdAndEstLu(Integer id, Boolean estLue);
+
+    // Toutes les notifications d'un utilisateur, toutes tontines confondues
+    List<Notification> findByMembre_User_IdOrderByDateCreationDesc(Integer userId);
 }

@@ -3,6 +3,7 @@ package com.tontineApp.tontine_manager.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -23,6 +24,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(UnAuthorizedException.class)
     public  ResponseEntity<ErreurReponse> handleNoAuthorizationFoundException(UnAuthorizedException e) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErreurReponse(e.getMessage(),403));
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ErreurReponse> handleAccessDeniedException(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErreurReponse("Accès refusé", 403));
     }
 
     @ExceptionHandler(Exception.class)

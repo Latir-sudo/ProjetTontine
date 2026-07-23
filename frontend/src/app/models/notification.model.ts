@@ -11,7 +11,9 @@ export interface Notification {
   idUser?: number;
   prenomUser?: string;
   nomUser?: string;
-  dateCreation: string;
+  // dateCreation peut être un ISO string "2024-07-22T10:30:00"
+  // ou un tableau Java [year, month, day, hour, min, sec]
+  dateCreation: string | number[];
   statutNotification?: string;
   typeNotification: string;
   lienAction?: string;

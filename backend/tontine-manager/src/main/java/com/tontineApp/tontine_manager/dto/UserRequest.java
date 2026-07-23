@@ -24,5 +24,6 @@ public class UserRequest {
     private String password;
     private LocalDate dateInscription;
     private String ville;
+    private String avatar;
     List<String> roles;
 }

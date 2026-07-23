@@ -1,40 +1,55 @@
 <nav class="bg-[#003366] text-white sticky top-0 z-50 shadow-lg">
-  <div class=" mx-10 px-4">
+  <div class="mx-10 px-4">
     <div class="flex justify-between items-center h-16">
-      
+
       <!-- Logo -->
-      <a routerLink="/accueil" class="flex items-center gap-2">
+      <a routerLink="/accueil" class="flex items-center gap-2 shrink-0">
         <i class="ri-hand-coin-line text-2xl text-[#FF7F50]"></i>
         <span class="text-xl font-bold">Tontine Manager</span>
       </a>
 
       <!-- Desktop Menu -->
-      <div class="hidden md:flex items-center space-x-6">
-        <!-- Liens publics -->        
-        <!-- Liens pour utilisateur connecté -->
+      <div class="hidden md:flex items-center space-x-1">
         <ng-container *ngIf="isLoggedIn()">
-          <a routerLink="/dashboard" class="hover:text-[#FF7F50] transition">Dashboard</a>
-          <a routerLink="/mes-tontines" class="hover:text-[#FF7F50] transition">Mes tontines</a>
-          <a routerLink="/tontine/create" class="hover:text-[#FF7F50] transition">Créer une tontine</a>
-          <a routerLink="/tontine-availables" class="hover:text-[#FF7F50] transition">Tontines disponibles</a>
-          <a routerLink="/historique" class="hover:text-[#FF7F50] transition">Historique</a>
-          <a routerLink="/notifications" class="hover:text-[#FF7F50] transition">Notifications</a>
-          
-          <!-- Admin links -->
-          <a *ngIf="isAdmin()" routerLink="/admin/users" class="hover:text-[#FF7F50] transition">Admin</a>
+          <a routerLink="/dashboard" routerLinkActive="nav-active"
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Dashboard</a>
+          <a routerLink="/mes-tontines" routerLinkActive="nav-active"
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Mes tontines</a>
+          <a routerLink="/tontine/create" routerLinkActive="nav-active"
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Créer</a>
+          <a routerLink="/tontine-availables" routerLinkActive="nav-active"
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Disponibles</a>
+          <a routerLink="/historique" routerLinkActive="nav-active"
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Historique</a>
+          <a routerLink="/notifications" routerLinkActive="nav-active"
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">
+            <i class="ri-notification-3-line"></i>
+          </a>
+          <a *ngIf="isAdmin()" routerLink="/admin/users" routerLinkActive="nav-active"
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Admin</a>
         </ng-container>
       </div>
 
       <!-- Right side (Auth buttons) -->
-      <div class="hidden md:flex items-center space-x-4">
+      <div class="hidden md:flex items-center space-x-3">
         <ng-container *ngIf="!isLoggedIn(); else loggedInButtons">
-          <a routerLink="/login" class="px-4 py-2 rounded-lg hover:bg-white/10 transition">Connexion</a>
-          <a routerLink="/inscription" class="px-4 py-2 bg-[#FF7F50] rounded-lg hover:bg-opacity-90 transition">Inscription</a>
+          <a routerLink="/login" class="px-4 py-2 rounded-lg hover:bg-white/10 transition-all duration-200">Connexion</a>
+          <a routerLink="/inscription" class="px-4 py-2 bg-[#FF7F50] rounded-lg hover:bg-[#e06b3e] transition-all duration-200 font-semibold">Inscription</a>
         </ng-container>
         <ng-template #loggedInButtons>
           <div class="flex items-center gap-3">
-            <a routerLink="/profil" class="text-sm text-gray-300 hover:text-white">👋 {{ authService.currentUser()?.prenom || authService.currentUser()?.nom }}</a>
-            <button (click)="logout()" class="px-4 py-2 bg-red-600 rounded-lg hover:bg-red-700 transition">
+            <a routerLink="/profil" class="flex items-center gap-2 text-sm text-gray-300 hover:text-white transition-all duration-200 px-2 py-1 rounded-lg hover:bg-white/10">
+              <img *ngIf="authService.currentUser()?.avatar; else defaultIcon"
+                   [src]="authService.currentUser()?.avatar"
+                   alt="avatar"
+                   class="w-8 h-8 rounded-full object-cover border border-[#FF7F50]" />
+              <ng-template #defaultIcon>
+                <i class="ri-user-3-line text-[#FF7F50]"></i>
+              </ng-template>
+              <span>{{ authService.currentUser()?.prenom || authService.currentUser()?.nom }}</span>
+            </a>
+            <button (click)="logout()" class="flex items-center gap-1.5 px-4 py-2 border border-white/30 rounded-lg hover:bg-white/10 transition-all duration-200 text-sm font-medium">
+              <i class="ri-logout-box-r-line"></i>
               Déconnexion
             </button>
           </div>
@@ -42,33 +57,62 @@
       </div>
 
       <!-- Mobile menu button -->
-      <button (click)="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-white/10">
-        <i class="ri-menu-line text-2xl"></i>
+      <button (click)="toggleMobileMenu()" class="md:hidden p-2 rounded-lg hover:bg-white/10 transition-all duration-200">
+        <i [class]="mobileMenuOpen ? 'ri-close-line text-2xl' : 'ri-menu-line text-2xl'"></i>
       </button>
     </div>
 
     <!-- Mobile Menu -->
     <div *ngIf="mobileMenuOpen" class="md:hidden py-4 border-t border-white/20">
-      <div class="flex flex-col space-y-3">        
+      <div class="flex flex-col space-y-1">
         <ng-container *ngIf="isLoggedIn()">
-          <a routerLink="/dashboard" (click)="toggleMobileMenu()" class="hover:text-[#FF7F50] transition">Dashboard</a>
-          <a routerLink="/mes-tontines" (click)="toggleMobileMenu()" class="hover:text-[#FF7F50] transition">Mes tontines</a>
-          <a routerLink="/tontine/create" (click)="toggleMobileMenu()" class="hover:text-[#FF7F50] transition">Créer une tontine</a>
-          <a routerLink="/tontine-availables" (click)="toggleMobileMenu()" class="hover:text-[#FF7F50] transition">Tontines disponibles</a>
-          <a routerLink="/historique" (click)="toggleMobileMenu()" class="hover:text-[#FF7F50] transition">Historique</a>
+          <a routerLink="/dashboard" routerLinkActive="nav-active-mobile" (click)="toggleMobileMenu()"
+             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2">
+            <i class="ri-dashboard-line w-4"></i> Dashboard
+          </a>
+          <a routerLink="/mes-tontines" routerLinkActive="nav-active-mobile" (click)="toggleMobileMenu()"
+             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2">
+            <i class="ri-group-line w-4"></i> Mes tontines
+          </a>
+          <a routerLink="/tontine/create" routerLinkActive="nav-active-mobile" (click)="toggleMobileMenu()"
+             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2">
+            <i class="ri-add-circle-line w-4"></i> Créer une tontine
+          </a>
+          <a routerLink="/tontine-availables" routerLinkActive="nav-active-mobile" (click)="toggleMobileMenu()"
+             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2">
+            <i class="ri-search-line w-4"></i> Tontines disponibles
+          </a>
+          <a routerLink="/historique" routerLinkActive="nav-active-mobile" (click)="toggleMobileMenu()"
+             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2">
+            <i class="ri-history-line w-4"></i> Historique
+          </a>
+          <a routerLink="/notifications" routerLinkActive="nav-active-mobile" (click)="toggleMobileMenu()"
+             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2">
+            <i class="ri-notification-3-line w-4"></i> Notifications
+          </a>
         </ng-container>
 
-        <div class="pt-3 border-t border-white/20">
+        <div class="pt-3 border-t border-white/20 mt-2">
           <ng-container *ngIf="!isLoggedIn(); else mobileLoggedIn">
-            <a routerLink="/login" (click)="toggleMobileMenu()" class="block py-2 hover:text-[#FF7F50] transition">Connexion</a>
-            <a routerLink="/inscription" (click)="toggleMobileMenu()" class="block py-2 bg-[#FF7F50] text-center rounded-lg mt-2">Inscription</a>
+            <a routerLink="/login" (click)="toggleMobileMenu()"
+               class="block px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Connexion</a>
+            <a routerLink="/inscription" (click)="toggleMobileMenu()"
+               class="block py-2.5 px-3 bg-[#FF7F50] text-center rounded-lg mt-2 font-semibold hover:bg-[#e06b3e] transition-all duration-200">Inscription</a>
           </ng-container>
           <ng-template #mobileLoggedIn>
-            <div class="text-sm text-gray-300 mb-3">
-              Connecté : {{ authService.currentUser()?.prenom || authService.currentUser()?.nom }}
+            <div class="flex items-center gap-2 px-3 py-2 text-sm text-gray-300 mb-2">
+              <img *ngIf="authService.currentUser()?.avatar; else mobileDefaultIcon"
+                   [src]="authService.currentUser()?.avatar"
+                   alt="avatar"
+                   class="w-8 h-8 rounded-full object-cover border border-[#FF7F50]" />
+              <ng-template #mobileDefaultIcon>
+                <i class="ri-user-3-line text-[#FF7F50]"></i>
+              </ng-template>
+              {{ authService.currentUser()?.prenom || authService.currentUser()?.nom }}
             </div>
-            <button (click)="logout()" class="w-full py-2 bg-red-600 rounded-lg text-center">
-              Déconnexion
+            <button (click)="logout()"
+              class="w-full py-2.5 px-3 border border-white/30 rounded-lg text-center text-sm font-medium hover:bg-white/10 transition-all duration-200 flex items-center justify-center gap-2">
+              <i class="ri-logout-box-r-line"></i> Déconnexion
             </button>
           </ng-template>
         </div>

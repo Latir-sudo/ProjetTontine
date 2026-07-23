@@ -30,6 +30,9 @@ public class Users {
     private String statutCompte;
     private String ville;
 
+    @Column(columnDefinition = "TEXT")
+    private String avatar;
+
     @ManyToMany
     @JoinTable(name = "users_roles" ,joinColumns = @JoinColumn(name="user_id"),inverseJoinColumns = @JoinColumn(name="role_id"))
     private List<Role> roles=new ArrayList<>();

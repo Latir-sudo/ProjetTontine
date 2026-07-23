@@ -2,7 +2,7 @@
   <section class="auth-card">
     <div class="auth-header">
       <span class="brand-pill">Connexion</span>
-      <h1>Tontine-Manager</h1>
+      <h1>Tontine Manager</h1>
       <p>Connectez-vous pour continuer</p>
     </div>
 
@@ -11,10 +11,11 @@
         <span>Email</span>
         <input
           type="email"
-          placeholder="example@email.com" 
+          placeholder="exemple@email.com"
           [(ngModel)]="credentials.email"
           name="email"
           required
+          autocomplete="email"
         />
       </label>
 
@@ -22,20 +23,20 @@
         <span>Mot de passe</span>
         <input
           type="password"
-          placeholder="********"
+          placeholder="Votre mot de passe"
           [(ngModel)]="credentials.password"
           name="password"
           required
+          autocomplete="current-password"
         />
       </label>
 
-      <!-- Message d'erreur -->
       <div *ngIf="errorMessage" class="error-message">
-        {{ errorMessage }}
+        <i class="ri-error-warning-line"></i> {{ errorMessage }}
       </div>
 
-      <!-- Indicateur de chargement -->
       <div *ngIf="isLoading" class="loading-spinner">
+        <div class="spinner-dot"></div>
         Connexion en cours...
       </div>
 
@@ -44,12 +45,13 @@
       </div>
 
       <button class="primary-button" type="submit" [disabled]="isLoading">
+        <i class="ri-login-circle-line"></i>
         {{ isLoading ? 'Connexion...' : 'Se connecter' }}
       </button>
     </form>
 
     <p class="auth-footer">
-      Pas de compte ? <a routerLink="/inscription">S’inscrire</a>
+      Pas encore de compte ? <a routerLink="/inscription">S'inscrire gratuitement</a>
     </p>
   </section>
 </div>

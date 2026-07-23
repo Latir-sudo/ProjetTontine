@@ -28,11 +28,34 @@ public class PaiementController {
      */
     @GetMapping("/membre/{membreId}/historique")
     @PreAuthorize("isAuthenticated() and @paiementSecurity.isOwner(#authentication, #membreId)")
-    public ResponseEntity<List<PaiementHistoriqueResponse>> getHistoriqueByMembre(
+    public ResponseEntity<?> getHistoriqueByMembre(
             @PathVariable Integer membreId,
             Authentication authentication) {
-        List<PaiementHistoriqueResponse> historique = paiementService.getHistoriqueByMembre(membreId);
+        try {
+            List<PaiementHistoriqueResponse> historique = paiementService.getHistoriqueByMembre(membreId);
+            return ResponseEntity.ok(historique);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(Map.of("error", "Erreur lors de la récupération de l'historique"));
+        }
+    }
+
+    @GetMapping("/user/{userId}/historique")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<List<PaiementHistoriqueResponse>> getHistoriqueByUser(
+            @PathVariable Integer userId,
+            Authentication authentication) {
+        List<PaiementHistoriqueResponse> historique = paiementService.getHistoriqueByUser(userId);
         return ResponseEntity.ok(historique);
+    }
+
+    @GetMapping("/user/{userId}/stats")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<PaiementStatsResponse> getStatsByUser(
+            @PathVariable Integer userId,
+            Authentication authentication) {
+        PaiementStatsResponse stats = paiementService.getStatsByUser(userId);
+        return ResponseEntity.ok(stats);
     }
 
     /**
@@ -136,10 +159,14 @@ public class PaiementController {
      */
     @GetMapping("/membre/{membreId}/stats")
     @PreAuthorize("isAuthenticated() and @paiementSecurity.isOwner(#authentication, #membreId)")
-    public ResponseEntity<PaiementStatsResponse> getStatsByMembre(
+    public ResponseEntity<?> getStatsByMembre(
             @PathVariable Integer membreId,
             Authentication authentication) {
-        PaiementStatsResponse stats = paiementService.getStatsByMembre(membreId);
-        return ResponseEntity.ok(stats);
+        try {
+            PaiementStatsResponse stats = paiementService.getStatsByMembre(membreId);
+            return ResponseEntity.ok(stats);
+        } catch (Exception e) {
+            return ResponseEntity.ok(new PaiementStatsResponse(0L, 0L, 0, 0, 0, 0.0));
+        }
     }
 }

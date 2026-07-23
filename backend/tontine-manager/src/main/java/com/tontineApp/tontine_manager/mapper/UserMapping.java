@@ -18,6 +18,7 @@ public class UserMapping {
         userResponse.setTelephone(user.getTelephone());
         userResponse.setDateInscription(user.getDateInscription());
         userResponse.setVille(user.getVille());
+        userResponse.setAvatar(user.getAvatar());
         userResponse.setId(user.getId());
 
         userResponse.setRoles(

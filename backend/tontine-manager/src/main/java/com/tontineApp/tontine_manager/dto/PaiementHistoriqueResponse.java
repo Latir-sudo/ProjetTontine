@@ -22,4 +22,5 @@ public class PaiementHistoriqueResponse {
     private Integer cotisationId;
     private String membreNom;
     private String membrePrenom;
+    private String nomTontine;
 }

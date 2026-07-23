@@ -11,6 +11,7 @@ export interface User {
   email: string;
   telephone: string;
   ville: string;
+  avatar?: string;
   roles: string[];
   dateInscription?: string;
 }
@@ -90,6 +91,7 @@ export class AuthService {
         email: userData.email || '',
         telephone: userData.telephone || '',
         ville: userData.ville || userData.localite || '',
+        avatar: userData.avatar || '',
         roles: userData.roles || [],
         dateInscription: userData.dateInscription
       };

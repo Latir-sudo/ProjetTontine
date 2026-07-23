@@ -18,6 +18,7 @@ public class UserResponse {
     private String telephone;
     private LocalDate dateInscription;
     private String ville;
+    private String avatar;
     private List<String> roles;
 
 

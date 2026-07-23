@@ -3,6 +3,7 @@ import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PaiementService } from '../../services/paiement.service';
 import { PaiementHistorique, PaiementStats } from '../../models/paiement.model';
+import { AuthService } from '../../services/auth.services';
 
 @Component({
   selector: 'app-historiques',
@@ -19,14 +20,17 @@ export class Historiques implements OnInit {
   isLoading: boolean = true;
   errorMessage: string | null = null;
 
-  currentMembreId: number = 1;
+  private currentUserId: number | null = null;
 
   constructor(
     private paiementService: PaiementService,
+    private authService: AuthService,
     private cdr: ChangeDetectorRef
   ) { }
 
   ngOnInit(): void {
+    const user = this.authService.currentUser();
+    this.currentUserId = user?.id ?? null;
     this.loadHistorique();
     this.loadStats();
     }
@@ -34,34 +38,42 @@ export class Historiques implements OnInit {
   loadHistorique(): void {
     this.isLoading = true;
     this.errorMessage = null;
-    this.cdr.detectChanges(); 
+    this.cdr.detectChanges();
 
-    this.paiementService.getHistoriqueByMembre(this.currentMembreId).subscribe({
+    if (!this.currentUserId) {
+      this.payments = [];
+      this.isLoading = false;
+      this.cdr.detectChanges();
+      return;
+    }
+
+    this.paiementService.getHistoriqueByUser(this.currentUserId).subscribe({
       next: (data) => {
-        console.log('Historique reçu:', data);
-        this.payments = data;
+        this.payments = data || [];
         this.isLoading = false;
-        this.cdr.detectChanges(); // ✅ Force la mise à jour de l'affichage
+        this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Erreur chargement historique:', err);
-        this.errorMessage = err.error?.message || 'Impossible de charger votre historique.';
+      error: () => {
+        this.payments = [];
         this.isLoading = false;
-        this.cdr.detectChanges(); // ✅ Force l'affichage de l'erreur
+        this.cdr.detectChanges();
       }
     });
   }
 
   loadStats(): void {
-    this.paiementService.getStatsByMembre(this.currentMembreId).subscribe({
+    if (!this.currentUserId) {
+      this.stats = null;
+      return;
+    }
+
+    this.paiementService.getStatsByUser(this.currentUserId).subscribe({
       next: (data) => {
-        console.log('Stats reçues:', data);
         this.stats = data;
-        this.cdr.detectChanges(); // ✅ Force la mise à jour des stats
+        this.cdr.detectChanges();
       },
-      error: (err) => {
-        console.error('Erreur chargement stats:', err);
-        // Optionnel : afficher une erreur pour les stats
+      error: () => {
+        this.stats = null;
       }
     });
   }

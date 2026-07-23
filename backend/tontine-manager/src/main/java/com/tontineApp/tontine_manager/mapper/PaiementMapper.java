@@ -59,13 +59,15 @@ public class PaiementMapper {
         if (paiement.getCotisation() != null) {
             response.setCotisationId(paiement.getCotisation().getId());
 
+            if (paiement.getCotisation().getTontine() != null) {
+                response.setNomTontine(paiement.getCotisation().getTontine().getNomTontine());
+            }
+
             if (paiement.getCotisation().getMembre() != null) {
-                // Récupérer le nom et prénom depuis l'utilisateur (Users)
                 if (paiement.getCotisation().getMembre().getUser() != null) {
                     response.setMembreNom(paiement.getCotisation().getMembre().getUser().getNom());
                     response.setMembrePrenom(paiement.getCotisation().getMembre().getUser().getPrenom());
 
-                    // Générer le titre
                     String titre = String.format("Cotisation - %s %s",
                             response.getMembrePrenom(),
                             response.getMembreNom());

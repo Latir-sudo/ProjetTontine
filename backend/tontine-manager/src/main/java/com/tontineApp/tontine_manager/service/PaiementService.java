@@ -41,6 +41,7 @@ public class PaiementService {
     /**
      * Récupère l'historique des paiements d'un membre
      */
+    @Transactional(readOnly = true)
     public List<PaiementHistoriqueResponse> getHistoriqueByMembre(Integer membreId) {
         log.info("Récupération historique paiements pour membre: {}", membreId);
 
@@ -67,6 +68,68 @@ public class PaiementService {
                 })
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<PaiementHistoriqueResponse> getHistoriqueByUser(Integer userId) {
+        log.info("Récupération historique paiements pour user: {}", userId);
+
+        if (userId == null) {
+            return List.of();
+        }
+
+        List<com.tontineApp.tontine_manager.model.Membre> membres = membreRepository.findAllByUser_Id(userId);
+        if (membres.isEmpty()) {
+            return List.of();
+        }
+
+        return membres.stream()
+                .flatMap(membre -> paiementRepository.findByMembreIdOrderByDatePaiementDesc(membre.getId()).stream())
+                .map(paiement -> {
+                    try {
+                        return paiementMapper.toHistoriqueResponse(paiement);
+                    } catch (Exception e) {
+                        log.error("Erreur mapping paiement {}: {}", paiement.getId(), e.getMessage());
+                        return null;
+                    }
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PaiementStatsResponse getStatsByUser(Integer userId) {
+        log.info("Calcul des statistiques de paiement pour le user: {}", userId);
+
+        List<com.tontineApp.tontine_manager.model.Membre> membres = membreRepository.findAllByUser_Id(userId);
+        if (membres.isEmpty()) {
+            return new PaiementStatsResponse(0L, 0L, 0, 0, 0, 0.0);
+        }
+
+        long totalPaye = 0L;
+        long totalAttendu = 0L;
+        int paiementsReussis = 0;
+        int paiementsEnAttente = 0;
+        int paiementsEchoues = 0;
+
+        for (com.tontineApp.tontine_manager.model.Membre membre : membres) {
+            List<Cotisation> cotisations = cotisationRepository.findByMembre_Id(membre.getId());
+            totalAttendu += cotisations.stream().mapToLong(Cotisation::getMontant).sum();
+
+            List<Paiement> valides = paiementRepository.findValidesByMembreId(membre.getId());
+            totalPaye += valides.stream().mapToLong(Paiement::getMontant).sum();
+
+            Integer r = paiementRepository.countValidesByMembreId(membre.getId());
+            Integer a = paiementRepository.countEnAttenteByMembreId(membre.getId());
+            Integer e = paiementRepository.countEchouesByMembreId(membre.getId());
+            paiementsReussis += (r != null ? r : 0);
+            paiementsEnAttente += (a != null ? a : 0);
+            paiementsEchoues += (e != null ? e : 0);
+        }
+
+        Double tauxCompletude = totalAttendu > 0 ? ((double) totalPaye / totalAttendu) * 100 : 0.0;
+
+        return new PaiementStatsResponse(totalPaye, totalAttendu, paiementsReussis, paiementsEnAttente, paiementsEchoues, tauxCompletude);
     }
 
     /**
@@ -250,19 +313,23 @@ public class PaiementService {
     public PaiementStatsResponse getStatsByMembre(Integer membreId) {
         log.info("Calcul des statistiques de paiement pour le membre: {}", membreId);
 
-        // Récupérer toutes les cotisations du membre
         List<Cotisation> cotisations = cotisationRepository.findByMembre_Id(membreId);
-        Long totalAttendu = cotisations.stream().mapToLong(Cotisation::getMontant).sum();
+        Long totalAttendu = (cotisations == null || cotisations.isEmpty()) ? 0L :
+                cotisations.stream().mapToLong(Cotisation::getMontant).sum();
 
-        // Récupérer les paiements validés
         List<Paiement> paiementsValides = paiementRepository.findValidesByMembreId(membreId);
-        Long totalPaye = paiementsValides.stream().mapToLong(Paiement::getMontant).sum();
+        Long totalPaye = (paiementsValides == null || paiementsValides.isEmpty()) ? 0L :
+                paiementsValides.stream().mapToLong(Paiement::getMontant).sum();
 
         Integer paiementsReussis = paiementRepository.countValidesByMembreId(membreId);
         Integer paiementsEnAttente = paiementRepository.countEnAttenteByMembreId(membreId);
         Integer paiementsEchoues = paiementRepository.countEchouesByMembreId(membreId);
 
-        Double tauxCompletude = totalAttendu > 0 ? (totalPaye.doubleValue() / totalAttendu.doubleValue()) * 100 : 0;
+        if (paiementsReussis == null) paiementsReussis = 0;
+        if (paiementsEnAttente == null) paiementsEnAttente = 0;
+        if (paiementsEchoues == null) paiementsEchoues = 0;
+
+        Double tauxCompletude = totalAttendu > 0 ? (totalPaye.doubleValue() / totalAttendu.doubleValue()) * 100 : 0.0;
 
         log.info("Statistiques membre {}: totalPaye={}, totalAttendu={}, taux={}%",
                 membreId, totalPaye, totalAttendu, tauxCompletude);

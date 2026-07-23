@@ -20,6 +20,14 @@ export class PaiementService {
     return this.http.get<PaiementStats>(`${this.apiUrl}/membre/${membreId}/stats`);
   }
 
+  getHistoriqueByUser(userId: number): Observable<PaiementHistorique[]> {
+    return this.http.get<PaiementHistorique[]>(`${this.apiUrl}/user/${userId}/historique`);
+  }
+
+  getStatsByUser(userId: number): Observable<PaiementStats> {
+    return this.http.get<PaiementStats>(`${this.apiUrl}/user/${userId}/stats`);
+  }
+
   createWaveCheckout(cotisationId: number, phoneNumber?: string): Observable<WaveCheckoutResponse> {
     return this.http.post<WaveCheckoutResponse>(`${this.apiUrl}/mobile/wave`, { cotisationId, phoneNumber });
   }

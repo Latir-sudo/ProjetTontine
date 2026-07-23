@@ -1,7 +1,7 @@
 // src/app/services/notification.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { Observable, firstValueFrom, throwError } from 'rxjs';
 import { Notification } from '../models/notification.model';
 import { AuthService } from './auth.services';
 
@@ -24,6 +24,7 @@ export interface NotificationRequest {
 })
 export class NotificationService {
   private apiUrl = 'http://localhost:8080/api/notifications';
+  private tontinesUrl = 'http://localhost:8080/api/tontine/mes-tontines';
   private currentTontineStorageKey = 'currentNotificationTontineId';
 
   constructor(
@@ -31,21 +32,66 @@ export class NotificationService {
     private authService: AuthService
   ) {}
 
-  // Recuperer toutes les notifications d'un utilisateur dans une tontine.
+  /**
+   * Charge toutes les notifications de l'utilisateur courant,
+   * toutes tontines confondues.
+   * Tente d'abord l'endpoint direct /user/{id}, puis agrège
+   * depuis chaque tontine si non disponible.
+   */
+  async getAllUserNotifications(): Promise<Notification[]> {
+    const userId = this.getCurrentUserId();
+    if (!userId) throw new Error('Utilisateur non connecté');
+
+    // Tentative 1 : endpoint direct sans tontineId
+    try {
+      const notifications = await firstValueFrom(
+        this.http.get<Notification[]>(`${this.apiUrl}/user/${userId}`)
+      );
+      if (Array.isArray(notifications)) {
+        return this.sortByDate(notifications);
+      }
+    } catch {
+      // L'endpoint n'existe pas → on agrège
+    }
+
+    // Tentative 2 : agrégation depuis toutes les tontines de l'utilisateur
+    let tontines: any[] = [];
+    try {
+      tontines = await firstValueFrom(
+        this.http.get<any[]>(this.tontinesUrl)
+      );
+    } catch {
+      return [];
+    }
+
+    if (!tontines || tontines.length === 0) return [];
+
+    const arrays = await Promise.all(
+      tontines.map(t =>
+        firstValueFrom(
+          this.http.get<Notification[]>(`${this.apiUrl}/user/${userId}/tontine/${t.id}`)
+        ).catch(() => [] as Notification[])
+      )
+    );
+
+    const merged = arrays.flat();
+    const unique = Array.from(new Map(merged.map(n => [n.id, n])).values());
+    return this.sortByDate(unique);
+  }
+
+  // Récupérer toutes les notifications d'un utilisateur dans une tontine.
   getNotifications(userId = this.getCurrentUserId(), tontineId = this.getCurrentTontineId()): Observable<Notification[]> {
     if (!this.hasNotificationContext(userId, tontineId)) {
       return this.missingContextError();
     }
-
     return this.http.get<Notification[]>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}`);
   }
 
-  // Recuperer les notifications non lues d'un utilisateur dans une tontine.
+  // Récupérer les notifications non lues d'un utilisateur dans une tontine.
   getUnreadNotifications(userId = this.getCurrentUserId(), tontineId = this.getCurrentTontineId()): Observable<Notification[]> {
     if (!this.hasNotificationContext(userId, tontineId)) {
       return this.missingContextError();
     }
-
     return this.http.get<Notification[]>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}/non-lues`);
   }
 
@@ -53,7 +99,6 @@ export class NotificationService {
     if (!this.hasNotificationContext(userId, tontineId)) {
       return this.missingContextError();
     }
-
     return this.http.get<number>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}/non-lues/count`);
   }
 
@@ -72,18 +117,16 @@ export class NotificationService {
     if (!this.hasNotificationContext(userId, tontineId)) {
       return this.missingContextError();
     }
-
     return this.http.patch<void>(`${this.apiUrl}/user/${userId}/tontine/${tontineId}/lire-tout`, {});
   }
 
-  // Creer une notification.
+  // Créer une notification.
   createNotification(notification: NotificationRequest): Observable<Notification> {
     return this.http.post<Notification>(this.apiUrl, notification);
   }
 
   setCurrentTontineId(tontineId: number | string): void {
     const normalizedTontineId = Number(tontineId);
-
     if (Number.isFinite(normalizedTontineId)) {
       localStorage.setItem(this.currentTontineStorageKey, normalizedTontineId.toString());
     }
@@ -91,6 +134,18 @@ export class NotificationService {
 
   deleteNotification(notificationId: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${notificationId}`);
+  }
+
+  private sortByDate(notifications: Notification[]): Notification[] {
+    return notifications.sort((a, b) => {
+      const toMs = (d: any): number => {
+        if (!d) return 0;
+        // Tableau Java [year, month, day, hour, min, sec] → mois est 1-based côté Java, 0-based en JS
+        if (Array.isArray(d)) return new Date(d[0], d[1] - 1, d[2], d[3] ?? 0, d[4] ?? 0, d[5] ?? 0).getTime();
+        return new Date(d).getTime();
+      };
+      return toMs(b.dateCreation) - toMs(a.dateCreation);
+    });
   }
 
   private getCurrentUserId(): number | null {
@@ -104,7 +159,6 @@ export class NotificationService {
       localStorage.getItem('idTontine') ||
       sessionStorage.getItem('tontineId') ||
       sessionStorage.getItem('idTontine');
-
     return storedTontineId ? Number(storedTontineId) : null;
   }
 

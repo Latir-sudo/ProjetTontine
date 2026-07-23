@@ -73,6 +73,11 @@ export class DetailTontine implements OnInit {
       await this.checkIfAdmin();
       if (this.isAdmin) {
         await this.loadDemandesAdhesion();
+        // Ouverture automatique du modal si redirigé depuis une notification d'adhésion
+        const showDemandes = this.route.snapshot.queryParamMap.get('showDemandes');
+        if (showDemandes === 'true') {
+          this.showDemandesModal = true;
+        }
       }
       this.cdr.detectChanges();
     } else {
@@ -190,13 +195,13 @@ export class DetailTontine implements OnInit {
 
   async approuverDemande(demande: DemandeAdhesion) {
     if (!this.tontine) return;
-    
+
     try {
-      console.log('Approbation de la demande:', demande);
       await this.apiService.patch(`/tontine/${this.tontine.id}/adhesion?idUser=${demande.idUser}`, {
         statut: 'ACCEPTEE'
       });
-      alert(`✅ ${demande.prenomUser} ${demande.nomUser} est maintenant membre de la tontine !`);
+      this.feedbackMessage = `${demande.prenomUser} ${demande.nomUser} est maintenant membre de la tontine.`;
+      this.feedbackType = 'success';
       await this.loadDemandesAdhesion();
       await this.loadTontineDetail(this.tontine.id);
       if (this.demandes.length === 0) {
@@ -205,24 +210,31 @@ export class DetailTontine implements OnInit {
       this.cdr.detectChanges();
     } catch (error: any) {
       console.error('Erreur approbation:', error);
-      const message = error?.error?.message || error?.message || 'Erreur lors de l\'approbation';
-      this.feedbackMessage = `❌ ${message}`;
+      this.feedbackMessage = error?.error?.message || error?.message || 'Erreur lors de l\'approbation';
       this.feedbackType = 'error';
+      this.cdr.detectChanges();
     }
   }
 
   async rejeterDemande(demande: DemandeAdhesion) {
     if (!this.tontine) return;
-    
-    if (!confirm(`Êtes-vous sûr de vouloir rejeter la demande de ${demande.prenomUser} ${demande.nomUser} ?`)) {
-      return;
-    }
-    
+    this.pendingRejectDemande = demande;
+    this.cdr.detectChanges();
+  }
+
+  pendingRejectDemande: DemandeAdhesion | null = null;
+
+  async confirmerRejet() {
+    const demande = this.pendingRejectDemande;
+    if (!demande || !this.tontine) return;
+    this.pendingRejectDemande = null;
+
     try {
       await this.apiService.patch(`/tontine/${this.tontine.id}/adhesion?idUser=${demande.idUser}`, {
         statut: 'REJETEE'
       });
-      alert(`❌ Demande de ${demande.prenomUser} ${demande.nomUser} rejetée.`);
+      this.feedbackMessage = `Demande de ${demande.prenomUser} ${demande.nomUser} rejetée.`;
+      this.feedbackType = 'info';
       await this.loadDemandesAdhesion();
       if (this.demandes.length === 0) {
         this.fermerModal();
@@ -230,10 +242,15 @@ export class DetailTontine implements OnInit {
       this.cdr.detectChanges();
     } catch (error: any) {
       console.error('Erreur rejet:', error);
-      const message = error?.error?.message || error?.message || 'Erreur lors du rejet';
-      this.feedbackMessage = `❌ ${message}`;
+      this.feedbackMessage = error?.error?.message || error?.message || 'Erreur lors du rejet';
       this.feedbackType = 'error';
+      this.cdr.detectChanges();
     }
+  }
+
+  annulerRejet() {
+    this.pendingRejectDemande = null;
+    this.cdr.detectChanges();
   }
 
   onImageError() {

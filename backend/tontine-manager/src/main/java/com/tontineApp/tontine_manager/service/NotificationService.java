@@ -100,6 +100,36 @@ public class NotificationService {
         notificationRepository.saveAll(notificationsNonLues);
     }
 
+    /**
+     * Récupère toutes les notifications d'un utilisateur, toutes tontines confondues.
+     * Exposé via GET /api/notifications/user/{userId}
+     */
+    public List<NotificationResponse> getAllNotificationsUser(Integer idUser) {
+        return notificationRepository.findByMembre_User_IdOrderByDateCreationDesc(idUser)
+                .stream()
+                .map(notificationMapper::toNotificationResponse)
+                .toList();
+    }
+
+    /**
+     * Crée une notification directement à partir d'un objet Membre déjà résolu.
+     * Utilisé par AdhesionService pour éviter une seconde requête BDD.
+     */
+    public void creerNotificationDirecte(Membre membre, String titre, String message,
+                                         String typeNotification, String couleur, String lienAction) {
+        Notification notification = new Notification();
+        notification.setMembre(membre);
+        notification.setTitre(titre);
+        notification.setMessage(message);
+        notification.setTypeNotification(typeNotification);
+        notification.setCouleur(couleur != null ? couleur : "#0052cc");
+        notification.setLienAction(lienAction);
+        notification.setEstLu(false);
+        notification.setStatutNotification(StatutNotification.NON_LU);
+        notification.setDateCreation(LocalDateTime.now());
+        notificationRepository.save(notification);
+    }
+
     private Membre getMembre(Integer idUser, Integer idTontine) {
         return membreRepository.findByTontine_IdAndUser_Id(idTontine, idUser)
                 .orElseThrow(() -> new RessourceNotFoundException(

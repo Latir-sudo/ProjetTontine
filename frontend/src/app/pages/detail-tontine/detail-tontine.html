@@ -1,118 +1,146 @@
 <div class="h-auto w-full px-4 py-6">
-  <header class="">
+  <header>
     <div class="flex justify-between items-center">
-      <button class="bg-[#003366] text-white px-4 py-3 rounded-lg mb-8 cursor-pointer flex items-center gap-2" routerLink="/available-tontines">
-        ← Retour
+      <button class="bg-white border border-gray-200 text-gray-700 px-4 py-2.5 rounded-xl mb-8 cursor-pointer flex items-center gap-2 hover:border-[#003366] hover:text-[#003366] transition-all duration-200 font-semibold text-sm" routerLink="/tontine-availables">
+        <i class="ri-arrow-left-line"></i> Retour
       </button>
-      
-      <!-- Boutons Admin (uniquement si l'utilisateur est admin) -->
+
+      <!-- Boutons Admin -->
       <section *ngIf="isAdmin" class="flex gap-2 mb-8">
-        <button class="bg-[#FF7F50] text-white px-4 py-3 rounded-lg hover:bg-opacity-90 transition cursor-pointer flex items-center gap-2" (click)="gererMembres()">
-          <i class="fa-solid fa-user-plus"></i>
+        <button
+          class="bg-[#FF7F50] text-white px-4 py-2.5 rounded-xl hover:bg-[#e06b3e] transition-all duration-200 cursor-pointer flex items-center gap-2 text-sm font-semibold"
+          (click)="gererMembres()">
+          <i class="ri-user-add-line"></i>
           Ajouter membre
         </button>
-        <button class="bg-[#003366] text-white px-4 py-3 rounded-lg hover:bg-opacity-90 transition cursor-pointer flex items-center gap-2 relative" (click)="gererDemandes()">
-          <i class="fa-solid fa-list-check"></i>
+        <button
+          class="bg-[#003366] text-white px-4 py-2.5 rounded-xl hover:bg-[#004080] transition-all duration-200 cursor-pointer flex items-center gap-2 relative text-sm font-semibold"
+          (click)="gererDemandes()">
+          <i class="ri-list-check-3"></i>
           Gérer les demandes
           <span *ngIf="demandes.length > 0" class="badge-demandes">{{ demandes.length }}</span>
         </button>
-
       </section>
     </div>
-    
+
     <div *ngIf="!isLoading && tontine">
-      <p class="text-xl font-extrabold mb-4 text-[#003366]">{{ tontine.nomTontine }}</p>
+      <p class="text-xl font-extrabold mb-1 text-[#003366]">{{ tontine.nomTontine }}</p>
+      <p class="text-sm text-gray-400 mb-4">
+        <span class="inline-flex items-center gap-1 bg-blue-50 text-[#003366] px-2.5 py-0.5 rounded-full font-semibold text-xs">
+          <i class="ri-price-tag-3-line"></i> {{ tontine.categorie || 'Générale' }}
+        </span>
+      </p>
     </div>
     <div *ngIf="isLoading">
-      <div class="flex justify-center items-center py-8">
-        <i class="fa-solid fa-spinner fa-spin text-[#003366] text-3xl"></i>
-        <span class="ml-3 text-gray-500">Chargement...</span>
+      <div class="flex items-center gap-3 py-8">
+        <div class="w-6 h-6 border-2 border-gray-200 border-t-[#003366] rounded-full animate-spin"></div>
+        <span class="text-gray-400 text-sm">Chargement...</span>
       </div>
     </div>
   </header>
 
   <!-- Message d'erreur -->
-  <div *ngIf="errorMessage" class="error-message bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4">
-    <i class="fa-solid fa-circle-exclamation mr-2"></i>
+  <div *ngIf="errorMessage" class="error-message flex items-center gap-2 mb-4">
+    <i class="ri-error-warning-line"></i>
     {{ errorMessage }}
-    <button routerLink="/available-tontines" class="text-red-700 underline ml-3">Retour à la liste</button>
+    <button routerLink="/tontine-availables" class="underline ml-2 font-semibold">Retour à la liste</button>
+  </div>
+
+  <!-- Feedback inline (remplacement des alert()) -->
+  <div *ngIf="feedbackMessage" class="mt-2 mb-4 px-4 py-3 rounded-xl border flex items-center gap-2" [ngClass]="{
+    'bg-green-50 border-green-200 text-green-700': feedbackType === 'success',
+    'bg-blue-50 border-blue-200 text-blue-700': feedbackType === 'info',
+    'bg-red-50 border-red-200 text-red-700': feedbackType === 'error'
+  }">
+    <i [class]="feedbackType === 'success' ? 'ri-checkbox-circle-line' : feedbackType === 'info' ? 'ri-information-line' : 'ri-error-warning-line'"></i>
+    {{ feedbackMessage }}
   </div>
 
   <!-- Détails de la tontine -->
   <section class="detail-card" *ngIf="!isLoading && tontine">
-    <div class="flex flex-wrap gap-6 w-auto h-auto px-4 py-8">
-      
+    <div class="flex flex-wrap gap-4 w-auto h-auto px-4 py-6">
+
       <!-- Montant -->
-      <div class="montant flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
-        <i *ngIf="imageError" class="fa-solid fa-money-bill-wave text-[#FF7F50] text-3xl mb-2"></i>
-        <h3 class="text-[#003366] py-2 font-semibold">Montant</h3>
-        <h2 class="text-xl font-bold">{{ tontine.montant | number }} FCFA</h2>
+      <div class="stat-chip">
+        <div class="stat-icon"><i class="ri-money-dollar-circle-line"></i></div>
+        <h3>Montant</h3>
+        <h2>{{ tontine.montant | number }} FCFA</h2>
       </div>
-      
+
       <!-- Fréquence -->
-      <div class="frequence flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
-        <i class="fa-solid fa-bolt text-[#FF7F50] text-3xl mb-2"></i>
-        <h3 class="text-[#003366] py-2 font-semibold">Fréquence</h3>
-        <h2 class="text-xl font-bold">{{ tontine.frequence || 'Mensuel' }}</h2>
+      <div class="stat-chip">
+        <div class="stat-icon"><i class="ri-calendar-schedule-line"></i></div>
+        <h3>Fréquence</h3>
+        <h2>{{ tontine.frequence || 'Mensuel' }}</h2>
       </div>
 
       <!-- Membres -->
-      <div class="membre flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
-        <i class="fa-solid fa-users text-[#FF7F50] text-3xl mb-2"></i>
-        <h3 class="text-[#003366] py-2 font-semibold">Membres</h3>
-        <h2 class="text-xl font-bold">{{ tontine.nombreMembres || 0 }}/{{ tontine.nombreMax || 20 }}</h2>
-        <!-- Barre de progression -->
-        <div class="w-full bg-gray-200 rounded-full h-1.5 mt-2">
-          <div class="bg-[#FF7F50] h-1.5 rounded-full" [style.width.%]="getProgressPercentage()"></div>
+      <div class="stat-chip">
+        <div class="stat-icon"><i class="ri-group-line"></i></div>
+        <h3>Membres</h3>
+        <h2>{{ tontine.nombreMembres || 0 }}/{{ tontine.nombreMax || 20 }}</h2>
+        <div class="w-full bg-gray-100 rounded-full h-1.5 mt-2">
+          <div class="bg-[#FF7F50] h-1.5 rounded-full transition-all duration-500" [style.width.%]="getProgressPercentage()"></div>
         </div>
       </div>
-      
-      <!-- Date début -->
-      <div class="debut flex flex-col justify-center items-center w-40 px-3 py-4 shadow-lg rounded-lg bg-white">
-        <i class="fa-solid fa-calendar text-[#FF7F50] text-3xl mb-2"></i>
-        <h3 class="text-[#003366] py-2 font-semibold">Début</h3>
-        <h2 class="text-xl font-bold">{{ (tontine.dateCreation | date:'dd/MM/yyyy') || '15 Mai' }}</h2>
+
+      <!-- Statut -->
+      <div class="stat-chip">
+        <div class="stat-icon"><i class="ri-pulse-line"></i></div>
+        <h3>Statut</h3>
+        <h2 class="flex items-center gap-1.5">
+          <span class="w-2 h-2 rounded-full inline-block"
+            [class.bg-green-500]="tontine.statutTontine === 'ACTIVE'"
+            [class.bg-yellow-400]="tontine.statutTontine !== 'ACTIVE'"></span>
+          {{ tontine.statutTontine || 'Active' }}
+        </h2>
+      </div>
+
+      <!-- Date création -->
+      <div class="stat-chip">
+        <div class="stat-icon"><i class="ri-calendar-2-line"></i></div>
+        <h3>Début</h3>
+        <h2>{{ (tontine.dateCreation | date:'dd/MM/yyyy') || '—' }}</h2>
       </div>
     </div>
 
     <!-- Description -->
-    <div class="description w-full h-auto mt-8 py-4 px-4 flex flex-col shadow-lg rounded-lg bg-white">
-      <div class="mb-4 flex justify-between items-center">
-        <p class="text-lg font-semibold text-[#003366]">
-          <i class="fa-solid fa-file-lines mr-2"></i>
-          Description
-        </p>
-      </div>
-      <p class="italic text-[16px] text-gray-600">{{ tontine.descriptionTontine || 'Aucune description disponible.' }}</p>
+    <div class="mx-4 mb-4 py-4 px-5 shadow-sm rounded-2xl bg-white border border-gray-100">
+      <p class="text-sm font-semibold text-[#003366] mb-2 flex items-center gap-2">
+        <i class="ri-file-text-line"></i> Description
+      </p>
+      <p class="text-gray-600 text-sm leading-relaxed">{{ tontine.descriptionTontine || 'Aucune description disponible.' }}</p>
     </div>
 
-    <!-- Information administrateur et lieu -->
-    <div class="info-admin mt-6 py-4 px-4 shadow-lg rounded-lg bg-white">
+    <!-- Info admin et lieu -->
+    <div class="mx-4 mb-4 py-4 px-5 shadow-sm rounded-2xl bg-white border border-gray-100">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div class="flex items-center gap-3">
-          <i class="fa-solid fa-user-crown text-[#003366] text-xl"></i>
+          <div class="w-9 h-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0">
+            <i class="ri-user-star-line text-[#003366]"></i>
+          </div>
           <div>
-            <p class="text-sm text-gray-500">Administrateur</p>
-            <p class="font-semibold">{{ tontine.prenomAdmin || 'Admin' }} {{ tontine.nomAdmin || '' }} {{ tontine.telephoneAdmin || '' }}</p>
+            <p class="text-xs text-gray-400">Administrateur</p>
+            <p class="font-semibold text-sm">{{ tontine.prenomAdmin || 'Admin' }} {{ tontine.nomAdmin || '' }}</p>
+            <p class="text-xs text-gray-400">{{ tontine.telephoneAdmin || '' }}</p>
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <i class="fa-solid fa-location-dot text-[#003366] text-xl"></i>
+          <div class="w-9 h-9 rounded-xl bg-orange-50 flex items-center justify-center shrink-0">
+            <i class="ri-map-pin-2-line text-[#FF7F50]"></i>
+          </div>
           <div>
-            <p class="text-sm text-gray-500">Localisation</p>
-            <p class="font-semibold">{{ tontine.region || 'Sénégal' }}</p>
+            <p class="text-xs text-gray-400">Localisation</p>
+            <p class="font-semibold text-sm">{{ tontine.region || 'Sénégal' }}</p>
           </div>
         </div>
         <div class="flex items-center gap-3">
-          <i class="fa-solid fa-chart-line text-[#003366] text-xl"></i>
+          <div class="w-9 h-9 rounded-xl bg-green-50 flex items-center justify-center shrink-0">
+            <i class="ri-hand-coin-line text-green-600"></i>
+          </div>
           <div>
-            <p class="text-sm text-gray-500">Statut</p>
-            <p class="font-semibold">
-              <span class="inline-flex items-center gap-1">
-                <span class="w-2 h-2 rounded-full" [class.bg-green-500]="tontine.statutTontine === 'ACTIVE'" [class.bg-yellow-500]="tontine.statutTontine !== 'ACTIVE'"></span>
-                {{ tontine.statutTontine || 'Active' }}
-              </span>
-            </p>
+            <p class="text-xs text-gray-400">Catégorie</p>
+            <p class="font-semibold text-sm">{{ tontine.categorie || 'Générale' }}</p>
           </div>
         </div>
       </div>
@@ -120,75 +148,115 @@
   </section>
 
   <!-- Squelette de chargement -->
-  <div *ngIf="isLoading && !tontine" class="skeleton-card space-y-4">
-    <div class="skeleton-header h-32 bg-gray-200 rounded-lg animate-pulse"></div>
-    <div class="skeleton-line h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
-    <div class="skeleton-line short h-4 bg-gray-200 rounded w-1/2 animate-pulse"></div>
-    <div class="skeleton-grid h-40 bg-gray-200 rounded-lg animate-pulse"></div>
-  </div>
-  
-  <!-- Bouton Paiement -->
-  <button 
-    *ngIf="isJoined"
-    (click)="goToPayment()" 
-    class="w-full bg-gradient-to-r from-[#FF7F50] to-[#FF6347] text-white py-3 rounded-xl font-bold hover:opacity-90 transition mt-6 flex items-center justify-center gap-2">
-    <i class="fa-solid fa-credit-card"></i>
-    Payer ma cotisation
-  </button>
-  
-  <div *ngIf="feedbackMessage" class="mt-6 px-4 py-3 rounded-lg border shadow-sm" [ngClass]="{
-    'bg-green-50 border-green-200 text-green-700': feedbackType === 'success',
-    'bg-blue-50 border-blue-200 text-blue-700': feedbackType === 'info',
-    'bg-red-50 border-red-200 text-red-700': feedbackType === 'error'
-  }">
-    {{ feedbackMessage }}
+  <div *ngIf="isLoading && !tontine" class="space-y-4 mt-4">
+    <div class="h-32 bg-gray-100 rounded-2xl animate-pulse"></div>
+    <div class="h-4 bg-gray-100 rounded w-3/4 animate-pulse"></div>
+    <div class="h-4 bg-gray-100 rounded w-1/2 animate-pulse"></div>
   </div>
 
-  <!-- Bouton Rejoindre (si pas encore membre) -->
-  <button 
+  <!-- Bouton Paiement (si membre) -->
+  <button
+    *ngIf="isJoined"
+    (click)="goToPayment()"
+    class="w-full bg-gradient-to-r from-[#FF7F50] to-[#FF6347] text-white py-3.5 rounded-2xl font-bold hover:opacity-90 transition-all duration-200 mt-6 flex items-center justify-center gap-2 shadow-md">
+    <i class="ri-bank-card-line"></i>
+    Payer ma cotisation
+  </button>
+
+  <!-- Bouton Rejoindre (si pas membre ni admin) -->
+  <button
     *ngIf="!isJoined && !isAdmin"
-    (click)="join()" 
-    class="w-full bg-[#003366] text-white py-3 rounded-xl font-bold hover:bg-opacity-90 transition mt-6 flex items-center justify-center gap-2">
-    <i class="fa-solid fa-handshake"></i>
+    (click)="join()"
+    class="w-full bg-[#003366] text-white py-3.5 rounded-2xl font-bold hover:bg-[#004080] transition-all duration-200 mt-6 flex items-center justify-center gap-2 shadow-md">
+    <i class="ri-hand-heart-line"></i>
     Rejoindre cette tontine
   </button>
 
-  <!-- Modal pour gérer les demandes d'adhésion -->
+</div>
+
+<!-- ===== OVERLAY MODAL ===== -->
 <div *ngIf="showDemandesModal" class="modal-overlay" (click)="fermerModal()"></div>
-<div *ngIf="showDemandesModal" class="modal-container">
+
+<!-- ===== MODAL DEMANDES D'ADHÉSION ===== -->
+<div *ngIf="showDemandesModal" class="modal-container" (click)="$event.stopPropagation()">
+
   <div class="modal-header">
-    <h3>📋 Demandes d'adhésion en attente</h3>
-    <button class="modal-close" (click)="fermerModal()">✕</button>
+    <div>
+      <div class="flex items-center gap-2 mb-1">
+        <div class="w-7 h-7 rounded-lg bg-blue-100 flex items-center justify-center">
+          <i class="ri-user-add-line text-[#003366] text-sm"></i>
+        </div>
+        <h3>Demandes d'adhésion</h3>
+      </div>
+      <p class="text-sm text-gray-400 font-normal" *ngIf="demandes.length > 0">
+        {{ demandes.length }} demande{{ demandes.length > 1 ? 's' : '' }} en attente
+      </p>
+    </div>
+    <button class="modal-close" (click)="fermerModal()" title="Fermer">
+      <i class="ri-close-line"></i>
+    </button>
   </div>
-  
+
   <div class="modal-body">
+
     <!-- Aucune demande -->
     <div *ngIf="demandes.length === 0" class="no-demandes">
-      <p>📭 Aucune demande d'adhésion en attente</p>
+      <div class="no-demandes-icon">
+        <i class="ri-inbox-archive-line"></i>
+      </div>
+      <p>Aucune demande en attente</p>
+      <span class="text-sm text-gray-400">Toutes les demandes ont été traitées</span>
     </div>
-    
+
     <!-- Liste des demandes -->
     <div *ngFor="let demande of demandes" class="demande-card">
+
+      <!-- Avatar initiales -->
+      <div class="demande-avatar">
+        {{ (demande.prenomUser || '?').charAt(0).toUpperCase() }}{{ (demande.nomUser || '').charAt(0).toUpperCase() }}
+      </div>
+
       <div class="demande-info">
         <div class="demande-nom">
           <strong>{{ demande.prenomUser }} {{ demande.nomUser }}</strong>
+          <span class="demande-status-pill">En attente</span>
         </div>
         <div class="demande-details">
-          <div>📧 {{ demande.emailUser }}</div>
-          <div>📞 {{ demande.telephoneUser }}</div>
-          <div>📅 Demandé le: {{ demande.dateAdhesion | date:'dd/MM/yyyy' }}</div>
+          <span><i class="ri-mail-line"></i> {{ demande.emailUser }}</span>
+          <span><i class="ri-phone-line"></i> {{ demande.telephoneUser }}</span>
+          <span><i class="ri-calendar-event-line"></i> {{ demande.dateAdhesion | date:'dd MMM yyyy' }}</span>
         </div>
       </div>
-      
+
       <div class="demande-actions">
-        <button class="btn-approuver" (click)="approuverDemande(demande)">
-          ✅ Approuver
-        </button>
-        <button class="btn-rejeter" (click)="rejeterDemande(demande)">
-          ❌ Rejeter
-        </button>
+        <!-- Confirmation inline du rejet -->
+        <ng-container *ngIf="pendingRejectDemande?.idUser === demande.idUser; else normalActions">
+          <div class="confirm-reject-row">
+            <span class="confirm-label">Confirmer le rejet ?</span>
+            <button class="btn-confirm-reject" (click)="confirmerRejet()">
+              <i class="ri-check-line"></i> Oui
+            </button>
+            <button class="btn-cancel-reject" (click)="annulerRejet()">
+              <i class="ri-close-line"></i> Non
+            </button>
+          </div>
+        </ng-container>
+        <ng-template #normalActions>
+          <button class="btn-approuver" (click)="approuverDemande(demande)">
+            <i class="ri-check-line"></i> Approuver
+          </button>
+          <button class="btn-rejeter" (click)="rejeterDemande(demande)">
+            <i class="ri-close-line"></i> Rejeter
+          </button>
+        </ng-template>
       </div>
+
     </div>
+
   </div>
-</div>
+
+  <div class="modal-footer">
+    <button class="btn-close-modal" (click)="fermerModal()">Fermer</button>
+  </div>
+
 </div>

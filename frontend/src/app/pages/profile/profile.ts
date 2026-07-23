@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,13 +17,39 @@ export class Profile {
   editingUser: User | null = null;
   saving = false;
   message = '';
-  errors: { [k: string]: string } = {};
+  errors: { prenom?: string; nom?: string; email?: string; telephone?: string } = {};
   avatarPreview: string | null = null;
+  private selectedAvatarBase64: string | null = null;
 
-  constructor(private auth: AuthService, private api: ApiService, private router: Router) {
+  constructor(private auth: AuthService, private api: ApiService, private router: Router, private cdr: ChangeDetectorRef) {
     this.user = this.auth.currentUser();
     this.editingUser = this.user ? { ...this.user } : null;
-    this.avatarPreview = null;
+    this.avatarPreview = this.user?.avatar || null;
+    this.loadUserFromBackend();
+  }
+
+  private async loadUserFromBackend() {
+    if (!this.user?.id) return;
+    try {
+      const data: any = await this.api.get(`/users/${this.user.id}`);
+      const loaded: User = {
+        id: data.id,
+        prenom: data.prenom,
+        nom: data.nom,
+        email: data.email,
+        telephone: data.telephone,
+        ville: data.ville,
+        avatar: data.avatar || '',
+        roles: data.roles || [],
+        dateInscription: data.dateInscription
+      };
+      this.user = loaded;
+      this.editingUser = { ...loaded };
+      this.avatarPreview = loaded.avatar || null;
+      this.auth.currentUser.set(loaded);
+    } catch (err) {
+      console.error('Erreur chargement profil', err);
+    }
   }
 
   async save() {
@@ -38,7 +64,8 @@ export class Profile {
         nom: this.editingUser.nom,
         email: this.editingUser.email,
         telephone: this.editingUser.telephone,
-        ville: this.editingUser.ville
+        ville: this.editingUser.ville,
+        avatar: this.selectedAvatarBase64 || undefined
       };
 
       const updated: any = await this.api.patch(`/users/${this.editingUser.id}`, payload);
@@ -50,6 +77,7 @@ export class Profile {
         email: updated.email,
         telephone: updated.telephone,
         ville: updated.ville,
+        avatar: updated.avatar || '',
         roles: updated.roles || [],
         dateInscription: updated.dateInscription
       };
@@ -62,6 +90,7 @@ export class Profile {
       this.message = err?.error?.message || 'Erreur lors de la mise à jour du profil.';
     } finally {
       this.saving = false;
+      this.cdr.detectChanges();
     }
   }
 
@@ -91,16 +120,22 @@ export class Profile {
     this.editingUser = this.user ? { ...this.user } : null;
     this.errors = {};
     this.message = '';
-    this.avatarPreview = null;
+    this.avatarPreview = this.user?.avatar || null;
+    this.selectedAvatarBase64 = null;
   }
 
   handleFileChange(e: Event) {
     const input = e.target as HTMLInputElement;
     if (!input.files || input.files.length === 0) return;
     const file = input.files[0];
+    if (file.size > 500_000) {
+      this.message = 'Image trop volumineuse (max 500 Ko).';
+      return;
+    }
     const reader = new FileReader();
     reader.onload = () => {
       this.avatarPreview = reader.result as string;
+      this.selectedAvatarBase64 = reader.result as string;
     };
     reader.readAsDataURL(file);
   }

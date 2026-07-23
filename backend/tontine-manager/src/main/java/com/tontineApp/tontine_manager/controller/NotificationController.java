@@ -24,6 +24,14 @@ public class NotificationController {
 
     private final NotificationService notificationService;
 
+    // Toutes les notifications d'un utilisateur, toutes tontines confondues
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<NotificationResponse>> getAllNotificationsUser(
+            @PathVariable Integer userId
+    ) {
+        return ResponseEntity.ok(notificationService.getAllNotificationsUser(userId));
+    }
+
     @GetMapping("/user/{userId}/tontine/{tontineId}")
     public ResponseEntity<List<NotificationResponse>> getNotifications(
             @PathVariable Integer userId,

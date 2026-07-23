@@ -1,60 +1,139 @@
-<!-- src/app/notifications/notifications.component.html -->
-<div class="page-shell notification-shell">
-  <header class="page-header">
-    <button class="back-link" routerLink="/">← Retour</button>
-    <div>
-      <span class="brand-pill">Notifications</span>
-      <h1>Notifications</h1>
-      <p>Suivez les événements importants de vos tontines.</p>
+<!-- notifications.component.html -->
+<div class="notif-shell">
+
+  <!-- ===== EN-TÊTE ===== -->
+  <header class="notif-header">
+    <div class="notif-header-left">
+      <button class="btn-back" routerLink="/dashboard">
+        <i class="ri-arrow-left-line"></i> Retour
+      </button>
+      <div>
+        <div class="flex items-center gap-2">
+          <span class="brand-pill">Notifications</span>
+          <span *ngIf="unreadCount > 0" class="unread-badge">{{ unreadCount }} non lue{{ unreadCount > 1 ? 's' : '' }}</span>
+        </div>
+        <h1 class="notif-title">Centre de notifications</h1>
+        <p class="notif-subtitle">Suivez tous les événements de vos tontines</p>
+      </div>
     </div>
-    <button class="action-link" type="button" (click)="markAllRead()">Tout marquer comme lu</button>
+
+    <div class="notif-header-actions">
+      <button class="btn-refresh" (click)="loadNotifications()" title="Actualiser">
+        <i class="ri-refresh-line"></i>
+      </button>
+      <button class="btn-mark-all" (click)="markAllRead()" *ngIf="unreadCount > 0">
+        <i class="ri-check-double-line"></i>
+        Tout marquer lu
+      </button>
+    </div>
   </header>
 
-  <!-- État de chargement -->
-  <div *ngIf="loading" class="loading-state">
-    <div class="spinner"></div>
+  <!-- ===== FILTRES ===== -->
+  <div class="filter-bar">
+    <button class="filter-btn" [class.active]="activeFilter === 'all'" (click)="setFilter('all')">
+      Toutes <span class="filter-count">{{ notifications.length }}</span>
+    </button>
+    <button class="filter-btn" [class.active]="activeFilter === 'unread'" (click)="setFilter('unread')">
+      Non lues <span class="filter-count" *ngIf="unreadCount > 0">{{ unreadCount }}</span>
+    </button>
+    <button class="filter-btn adhesion-filter" [class.active]="activeFilter === 'ADHESION'" (click)="setFilter('ADHESION')">
+      <i class="ri-user-add-line"></i> Adhésions
+      <span class="filter-count adhesion-count" *ngIf="adhesionCount > 0">{{ adhesionCount }}</span>
+    </button>
+    <button class="filter-btn" [class.active]="activeFilter === 'PAIEMENT'" (click)="setFilter('PAIEMENT')">
+      <i class="ri-money-dollar-circle-line"></i> Paiements
+    </button>
+  </div>
+
+  <!-- ===== ÉTAT DE CHARGEMENT ===== -->
+  <div *ngIf="loading" class="notif-state">
+    <div class="spinner-ring"></div>
     <p>Chargement des notifications...</p>
   </div>
 
-  <!-- État d'erreur -->
-  <div *ngIf="error" class="error-state">
+  <!-- ===== ÉTAT D'ERREUR ===== -->
+  <div *ngIf="error && !loading" class="notif-state error-state">
+    <div class="state-icon"><i class="ri-wifi-off-line"></i></div>
     <p>{{ error }}</p>
-    <button (click)="loadNotifications()" class="retry-btn">Réessayer</button>
+    <button class="btn-retry" (click)="loadNotifications()">
+      <i class="ri-refresh-line"></i> Réessayer
+    </button>
   </div>
 
-  <!-- Liste des notifications -->
-  <div *ngIf="!loading && !error" class="notification-list">
-    <article
-      *ngFor="let notification of notifications; trackBy: trackByNotificationId"
-      class="notification-card"
-      [class.read]="notification.estLu"
-      (click)="markSingleRead(notification.id)">
-      <div class="notification-dot" [style.background]="notification.couleur"></div>
-      <div>
-        <strong>{{ notification.titre }}</strong>
-        <p>{{ notification.message }}</p>
-      </div>
-      <div class="notification-right">
-        <span>{{ notification.tempsRelatif }}</span>
-        <button
-          *ngIf="!notification.estLu"
-          class="mark-read-btn"
-          (click)="$event.stopPropagation(); markSingleRead(notification.id)"
-          title="Marquer comme lu">
-          ✓
-        </button>
-        <button
-          class="delete-btn"
-          (click)="$event.stopPropagation(); deleteNotification(notification.id)"
-          title="Supprimer">
-          ×
-        </button>
-      </div>
-    </article>
+  <!-- ===== LISTE DES NOTIFICATIONS ===== -->
+  <div *ngIf="!loading && !error" class="notif-list">
 
     <!-- État vide -->
-    <div *ngIf="notifications.length === 0" class="empty-state">
-      <p>Aucune notification pour le moment</p>
+    <div *ngIf="filteredNotifications.length === 0" class="notif-state">
+      <div class="state-icon"><i class="ri-notification-off-line"></i></div>
+      <p *ngIf="activeFilter === 'all'">Aucune notification pour le moment</p>
+      <p *ngIf="activeFilter === 'unread'">Toutes vos notifications sont lues</p>
+      <p *ngIf="activeFilter !== 'all' && activeFilter !== 'unread'">Aucune notification de ce type</p>
     </div>
+
+    <!-- Cards de notifications -->
+    <article
+      *ngFor="let notif of filteredNotifications; trackBy: trackByNotificationId"
+      class="notif-card"
+      [class.is-unread]="!notif.estLu"
+      [class.is-adhesion]="isAdhesionType(notif)"
+      (click)="handleNotificationClick(notif)">
+
+      <!-- Indicateur couleur gauche -->
+      <div class="notif-accent" [style.background]="notif.couleur || (isAdhesionType(notif) ? '#0052cc' : isPaiementType(notif) ? '#1f9a5a' : '#9c7ae1')"></div>
+
+      <!-- Point non lu -->
+      <div class="unread-dot" *ngIf="!notif.estLu"></div>
+
+      <!-- Icône -->
+      <div class="notif-icon" [class.icon-adhesion]="isAdhesionType(notif)" [class.icon-paiement]="isPaiementType(notif)" [class.icon-info]="!isAdhesionType(notif) && !isPaiementType(notif)">
+        <i [class]="getNotificationIcon(notif)"></i>
+      </div>
+
+      <!-- Contenu -->
+      <div class="notif-content">
+        <div class="notif-top">
+          <span class="notif-badge" [class]="getTypeBadge(notif).css">{{ getTypeBadge(notif).label }}</span>
+          <span *ngIf="notif.nomTontine" class="notif-tontine-name">
+            <i class="ri-hand-coin-line"></i> {{ notif.nomTontine }}
+          </span>
+        </div>
+        <strong class="notif-titre">{{ notif.titre }}</strong>
+        <p class="notif-message">{{ notif.message }}</p>
+
+        <!-- CTA pour adhésion -->
+        <div *ngIf="isAdhesionType(notif) && notif.idTontine" class="notif-cta">
+          <span class="cta-hint">
+            <i class="ri-cursor-line"></i>
+            Cliquez pour gérer cette demande d'adhésion
+          </span>
+        </div>
+      </div>
+
+      <!-- Meta droite -->
+      <div class="notif-meta">
+        <span class="notif-time">
+          <i class="ri-time-line"></i> {{ notif.tempsRelatif || (toDate(notif.dateCreation) | date:'dd/MM HH:mm') }}
+        </span>
+        <div class="notif-actions">
+          <button
+            *ngIf="!notif.estLu"
+            class="btn-read"
+            (click)="$event.stopPropagation(); markSingleRead(notif.id)"
+            title="Marquer comme lu">
+            <i class="ri-check-line"></i>
+          </button>
+          <button
+            class="btn-delete"
+            (click)="deleteNotification($event, notif.id)"
+            title="Supprimer">
+            <i class="ri-delete-bin-6-line"></i>
+          </button>
+        </div>
+      </div>
+
+    </article>
+
   </div>
+
 </div>
