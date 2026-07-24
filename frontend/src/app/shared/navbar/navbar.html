@@ -22,8 +22,9 @@
           <a routerLink="/historique" routerLinkActive="nav-active"
              class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Historique</a>
           <a routerLink="/notifications" routerLinkActive="nav-active"
-             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">
+             class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 relative">
             <i class="ri-notification-3-line"></i>
+            <span *ngIf="unreadCount > 0" class="notif-badge">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
           </a>
           <a *ngIf="isAdmin()" routerLink="/admin/users" routerLinkActive="nav-active"
              class="nav-link px-3 py-2 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200">Admin</a>
@@ -87,8 +88,9 @@
             <i class="ri-history-line w-4"></i> Historique
           </a>
           <a routerLink="/notifications" routerLinkActive="nav-active-mobile" (click)="toggleMobileMenu()"
-             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2">
+             class="px-3 py-2.5 rounded-lg hover:text-[#FF7F50] hover:bg-white/10 transition-all duration-200 flex items-center gap-2 relative">
             <i class="ri-notification-3-line w-4"></i> Notifications
+            <span *ngIf="unreadCount > 0" class="notif-badge-mobile">{{ unreadCount > 9 ? '9+' : unreadCount }}</span>
           </a>
         </ng-container>
 

@@ -101,8 +101,8 @@
         <strong class="notif-titre">{{ notif.titre }}</strong>
         <p class="notif-message">{{ notif.message }}</p>
 
-        <!-- CTA pour adhésion -->
-        <div *ngIf="isAdhesionType(notif) && notif.idTontine" class="notif-cta">
+        <!-- CTA uniquement pour l'admin qui doit gérer une demande -->
+        <div *ngIf="isAdhesionType(notif) && notif.lienAction && notif.lienAction.includes('showDemandes')" class="notif-cta">
           <span class="cta-hint">
             <i class="ri-cursor-line"></i>
             Cliquez pour gérer cette demande d'adhésion

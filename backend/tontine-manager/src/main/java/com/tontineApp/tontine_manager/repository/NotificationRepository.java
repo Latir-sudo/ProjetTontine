@@ -16,4 +16,7 @@ public interface NotificationRepository extends JpaRepository<Notification,Integ
 
     // Toutes les notifications d'un utilisateur, toutes tontines confondues
     List<Notification> findByMembre_User_IdOrderByDateCreationDesc(Integer userId);
+
+    // Notifications liées directement à un utilisateur (sans passer par Membre)
+    List<Notification> findByUser_IdOrderByDateCreationDesc(Integer userId);
 }

@@ -11,9 +11,11 @@ import com.tontineApp.tontine_manager.mapper.AdhesionMapper;
 import com.tontineApp.tontine_manager.model.Adhesion;
 import com.tontineApp.tontine_manager.model.Membre;
 import com.tontineApp.tontine_manager.model.Tontine;
+import com.tontineApp.tontine_manager.model.Users;
 import com.tontineApp.tontine_manager.repository.AdhesionRepository;
 import com.tontineApp.tontine_manager.repository.MembreRepository;
 import com.tontineApp.tontine_manager.repository.TontineRepository;
+import com.tontineApp.tontine_manager.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +38,7 @@ public class AdhesionService {
     private final MembreService membreService;
     private final MembreRepository membreRepository;
     private final NotificationService notificationService;
+    private final UserRepository userRepository;
 
     public List<AdhesionResponse> getAdhesionAttente(Integer idTontine) {
         log.info("Recuperation des adhesions en attente pour la tontine {}", idTontine);
@@ -87,8 +90,8 @@ public class AdhesionService {
         }
 
         if (StatutAdhesion.REJETEE.equals(nouveauStatut)) {
-            // Le demandeur n'est pas encore membre → log seulement (pas de Membre record)
             log.info("Demande rejetee pour user={}, tontine={}", idUser, idTontine);
+            envoyerNotificationRejet(idUser, adhesion.getTontine());
         }
 
         Adhesion saved = adhesionRepository.save(adhesion);
@@ -114,6 +117,9 @@ public class AdhesionService {
 
         // Notifier l'admin de la tontine qu'une nouvelle demande est arrivée
         envoyerNotificationAdmin(tontine, adhesion);
+
+        // Notifier le demandeur que sa demande a été envoyée
+        envoyerNotificationDemandeur(adhesion.getUser(), tontine);
 
         return adhesionMapper.toAdhesionResponse(saved);
     }
@@ -190,6 +196,45 @@ public class AdhesionService {
                 "ADHESION",
                 "#1f9a5a",
                 "/tontine/" + idTontine
+        );
+    }
+
+    /**
+     * Notifie le demandeur que sa demande d'adhésion a bien été envoyée.
+     * Le demandeur n'est pas encore membre, donc on utilise la notification liée à User.
+     */
+    private void envoyerNotificationDemandeur(Users user, Tontine tontine) {
+        if (user == null) return;
+
+        String nomTontine = tontine != null ? tontine.getNomTontine() : "la tontine";
+
+        notificationService.creerNotificationUtilisateur(
+                user,
+                "Demande d'adhésion envoyée",
+                "Votre demande pour rejoindre « " + nomTontine + " » a été envoyée. Vous serez notifié dès qu'elle sera traitée.",
+                "ADHESION",
+                "#0052cc",
+                null
+        );
+    }
+
+    /**
+     * Notifie le demandeur que sa demande d'adhésion a été refusée.
+     * Le demandeur n'est pas membre, donc on utilise la notification liée à User.
+     */
+    private void envoyerNotificationRejet(Integer idUser, Tontine tontine) {
+        Users user = userRepository.findById(idUser).orElse(null);
+        if (user == null) return;
+
+        String nomTontine = tontine != null ? tontine.getNomTontine() : "la tontine";
+
+        notificationService.creerNotificationUtilisateur(
+                user,
+                "Demande d'adhésion refusée",
+                "Votre demande pour rejoindre « " + nomTontine + " » a été refusée.",
+                "ADHESION",
+                "#e63946",
+                null
         );
     }
 }

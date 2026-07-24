@@ -1,10 +1,8 @@
 package com.tontineApp.tontine_manager.controller;
 
-import com.tontineApp.tontine_manager.dto.AuthResponse;
-import com.tontineApp.tontine_manager.dto.LoginRequest;
-import com.tontineApp.tontine_manager.dto.UserRequest;
-import com.tontineApp.tontine_manager.dto.UserResponse;
+import com.tontineApp.tontine_manager.dto.*;
 import com.tontineApp.tontine_manager.service.JwtService;
+import com.tontineApp.tontine_manager.service.PasswordResetService;
 import com.tontineApp.tontine_manager.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +14,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @AllArgsConstructor
@@ -25,6 +26,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final UserService userService;  // ← Ajouter
     private final UserDetailsService userDetailsService;
+    private final PasswordResetService passwordResetService;
 
     @PostMapping("/login")
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest loginRequest) {
@@ -92,5 +94,56 @@ public class AuthController {
             );
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse);
         }
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<Map<String, Object>> forgotPassword(@RequestBody PasswordResetRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            passwordResetService.generateResetCode(request.getEmail().trim());
+            response.put("success", true);
+            response.put("message", "Un code de réinitialisation a été envoyé à votre adresse email");
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.put("success", false);
+            response.put("message", "Erreur lors de l'envoi. Veuillez réessayer.");
+        }
+        return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/verify-reset-code")
+    public ResponseEntity<Map<String, Object>> verifyResetCode(@RequestBody PasswordResetVerifyRequest request) {
+        try {
+            boolean valid = passwordResetService.verifyCode(request.getEmail().trim(), request.getCode().trim());
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", valid);
+            response.put("message", valid ? "Code valide" : "Code invalide ou expiré");
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            Map<String, Object> response = new HashMap<>();
+            response.put("success", false);
+            response.put("message", "Erreur lors de la vérification");
+            return ResponseEntity.ok(response);
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<Map<String, Object>> resetPassword(@RequestBody PasswordResetConfirmRequest request) {
+        Map<String, Object> response = new HashMap<>();
+        try {
+            passwordResetService.resetPassword(request.getEmail().trim(), request.getCode().trim(), request.getNewPassword());
+            response.put("success", true);
+            response.put("message", "Mot de passe réinitialisé avec succès");
+        } catch (IllegalArgumentException e) {
+            response.put("success", false);
+            response.put("message", e.getMessage());
+        } catch (Exception e) {
+            response.put("success", false);
+            response.put("message", "Erreur lors de la réinitialisation");
+        }
+        return ResponseEntity.ok(response);
     }
 }

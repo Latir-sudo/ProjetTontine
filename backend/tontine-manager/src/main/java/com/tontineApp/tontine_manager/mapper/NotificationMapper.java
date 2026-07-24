@@ -46,6 +46,10 @@ public class NotificationMapper {
                 response.setIdTontine(notification.getMembre().getTontine().getId());
                 response.setNomTontine(notification.getMembre().getTontine().getNomTontine());
             }
+        } else if (notification.getUser() != null) {
+            response.setIdUser(notification.getUser().getId());
+            response.setNomUser(notification.getUser().getNom());
+            response.setPrenomUser(notification.getUser().getPrenom());
         }
 
         return response;

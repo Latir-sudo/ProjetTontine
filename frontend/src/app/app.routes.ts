@@ -14,6 +14,7 @@ import { Administration } from './pages/administration/administration';
 import { AddMemberComponent } from './pages/mes-tontines/add-member/add-member.component';
 import { NotificationsComponent } from './pages/notifications/notifications.component';
 import { Profile } from './pages/profile/profile';
+import { ForgotPassword } from './pages/forgot-password/forgot-password';
 export const routes: Routes = [
   
   { path: 'accueil', component: Accueil },
@@ -23,6 +24,7 @@ export const routes: Routes = [
   // Routes d'authentification (publiques)
   { path: 'login', component: Login },
   { path: 'inscription', component: Register },
+  { path: 'forgot-password', component: ForgotPassword },
   
   // Routes protégées (nécessitent authentification)
   { path: 'dashboard', component: Dashboard, canActivate: [AuthGuard] },

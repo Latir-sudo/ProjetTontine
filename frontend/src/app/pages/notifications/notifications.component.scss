@@ -271,10 +271,11 @@
 .notif-card {
   position: relative;
   display: grid;
-  grid-template-columns: 4px auto 1fr auto;
+  grid-template-columns: auto 1fr auto;
   align-items: start;
-  gap: 1rem;
-  padding: 1.1rem 1.25rem;
+  column-gap: 1.25rem;
+  row-gap: 0;
+  padding: 1.25rem 1.5rem 1.25rem 1.5rem;
   background: #ffffff;
   border: 1.5px solid #e6e9f2;
   border-radius: 1.25rem;
@@ -325,28 +326,31 @@
 }
 
 .notif-icon {
-  width: 42px;
-  height: 42px;
-  border-radius: 0.85rem;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 
-  i { font-size: 1.2rem; }
+  i { font-size: 1.25rem; }
 
   &.icon-adhesion {
-    background: rgba(0, 82, 204, 0.1);
+    background: rgba(0, 82, 204, 0.08);
+    border: 1.5px solid rgba(0, 82, 204, 0.12);
     i { color: #0052cc; }
   }
 
   &.icon-paiement {
-    background: rgba(31, 154, 90, 0.1);
+    background: rgba(31, 154, 90, 0.08);
+    border: 1.5px solid rgba(31, 154, 90, 0.12);
     i { color: #1f9a5a; }
   }
 
   &.icon-info {
-    background: rgba(156, 122, 225, 0.1);
+    background: rgba(156, 122, 225, 0.08);
+    border: 1.5px solid rgba(156, 122, 225, 0.12);
     i { color: #9c7ae1; }
   }
 }
@@ -354,40 +358,45 @@
 .notif-content {
   flex: 1;
   display: grid;
-  gap: 0.3rem;
+  gap: 0.4rem;
   min-width: 0;
+  padding-top: 2px;
 }
 
 .notif-top {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   flex-wrap: wrap;
+  margin-bottom: 0.15rem;
 }
 
 .notif-badge {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.7rem;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  letter-spacing: 0.03em;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
 
   &.badge-adhesion {
-    background: rgba(0, 82, 204, 0.1);
+    background: rgba(0, 82, 204, 0.09);
     color: #0052cc;
+    border: 1px solid rgba(0, 82, 204, 0.15);
   }
 
   &.badge-paiement {
-    background: rgba(31, 154, 90, 0.1);
+    background: rgba(31, 154, 90, 0.09);
     color: #1f9a5a;
+    border: 1px solid rgba(31, 154, 90, 0.15);
   }
 
   &.badge-info {
-    background: rgba(156, 122, 225, 0.1);
+    background: rgba(156, 122, 225, 0.09);
     color: #9c7ae1;
+    border: 1px solid rgba(156, 122, 225, 0.15);
   }
 }
 
@@ -503,7 +512,7 @@
 // ===== RESPONSIVE =====
 @media (max-width: 600px) {
   .notif-card {
-    grid-template-columns: 4px auto 1fr;
+    grid-template-columns: auto 1fr;
 
     .notif-meta {
       display: none;
